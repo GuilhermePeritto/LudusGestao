@@ -17,3 +17,4 @@ C:\Users\guilherme.peritto\Documents\LudusGestao\LudusGestao.Infrastructure\obj\
 C:\Users\guilherme.peritto\Documents\LudusGestao\LudusGestao.Infrastructure\obj\Debug\net8.0\LudusGestao.Infrastructure.pdb
 C:\Users\guilherme.peritto\Documents\LudusGestao\LudusGestao.Infrastructure\obj\Debug\net8.0\LudusGestao.Infrastructure.genruntimeconfig.cache
 C:\Users\guilherme.peritto\Documents\LudusGestao\LudusGestao.Infrastructure\obj\Debug\net8.0\ref\LudusGestao.Infrastructure.dll
+C:\Users\guilherme.peritto\Documents\LudusGestao\LudusGestao.Infrastructure\obj\Debug\net8.0\LudusGestao.Infrastructure.sourcelink.json

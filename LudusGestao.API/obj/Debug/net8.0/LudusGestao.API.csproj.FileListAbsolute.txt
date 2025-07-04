@@ -150,3 +150,4 @@ C:\Users\guilherme.peritto\Documents\LudusGestao\LudusGestao.API\obj\Debug\net8.
 C:\Users\guilherme.peritto\Documents\LudusGestao\LudusGestao.API\obj\Debug\net8.0\LudusGestao.API.pdb
 C:\Users\guilherme.peritto\Documents\LudusGestao\LudusGestao.API\obj\Debug\net8.0\LudusGestao.API.genruntimeconfig.cache
 C:\Users\guilherme.peritto\Documents\LudusGestao\LudusGestao.API\obj\Debug\net8.0\ref\LudusGestao.API.dll
+C:\Users\guilherme.peritto\Documents\LudusGestao\LudusGestao.API\obj\Debug\net8.0\LudusGestao.API.sourcelink.json

@@ -13,3 +13,4 @@ C:\Users\guilherme.peritto\Documents\LudusGestao\LudusGestao.Application\obj\Deb
 C:\Users\guilherme.peritto\Documents\LudusGestao\LudusGestao.Application\obj\Debug\net8.0\refint\LudusGestao.Application.dll
 C:\Users\guilherme.peritto\Documents\LudusGestao\LudusGestao.Application\obj\Debug\net8.0\LudusGestao.Application.pdb
 C:\Users\guilherme.peritto\Documents\LudusGestao\LudusGestao.Application\obj\Debug\net8.0\ref\LudusGestao.Application.dll
+C:\Users\guilherme.peritto\Documents\LudusGestao\LudusGestao.Application\obj\Debug\net8.0\LudusGestao.Application.sourcelink.json

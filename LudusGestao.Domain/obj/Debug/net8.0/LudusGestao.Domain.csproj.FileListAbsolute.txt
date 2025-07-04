@@ -9,3 +9,4 @@ C:\Users\guilherme.peritto\Documents\LudusGestao\LudusGestao.Domain\obj\Debug\ne
 C:\Users\guilherme.peritto\Documents\LudusGestao\LudusGestao.Domain\obj\Debug\net8.0\refint\LudusGestao.Domain.dll
 C:\Users\guilherme.peritto\Documents\LudusGestao\LudusGestao.Domain\obj\Debug\net8.0\LudusGestao.Domain.pdb
 C:\Users\guilherme.peritto\Documents\LudusGestao\LudusGestao.Domain\obj\Debug\net8.0\ref\LudusGestao.Domain.dll
+C:\Users\guilherme.peritto\Documents\LudusGestao\LudusGestao.Domain\obj\Debug\net8.0\LudusGestao.Domain.sourcelink.json
