@@ -2,4 +2,18 @@ version: '3.8'
 services:
   postgres:
     environment:
-      POSTGRES_DB: reservasdb_dev
+      POSTGRES_DB: ludusdb_dev
+    ports:
+      - "5432:5432"
+
+  api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Host=postgres;Database=ludusdb_dev;Username=ludus;Password=ludus123
+    volumes:
+      - ../:/src
+      - /src/bin
+      - /src/obj
+    ports:
+      - "5000:80"
+      - "5001:443"

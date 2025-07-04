@@ -1,4 +1,5 @@
 using LudusGestao.Domain.Entities.Base;
+using LudusGestao.Domain.Enums;
 using System;
 
 namespace LudusGestao.Domain.Entities
@@ -15,9 +16,11 @@ namespace LudusGestao.Domain.Entities
         public string Email { get; set; }
         public string Cnpj { get; set; }
         public string Responsavel { get; set; }
-        public bool Ativo { get; set; }
+        public SituacaoBase Situacao { get; set; }
         public DateTime DataAbertura { get; set; }
+        public DateTime DataCadastro { get; set; }
         public int TenantId { get; set; }
+        public Guid EmpresaId { get; set; }
         public Empresa Empresa { get; set; }
     }
 } 

@@ -1,17 +1,19 @@
-namespace LudusGestao.Application.DTOs.Usuario;
+using LudusGestao.Domain.Enums;
 using System;
 using System.Collections.Generic;
+
+namespace LudusGestao.Application.DTOs.Usuario;
 
 public class CreateUsuarioDTO
 {
     public string Nome { get; set; }
     public string Email { get; set; }
+    public string Username { get; set; }
     public string Telefone { get; set; }
     public string Cargo { get; set; }
     public Guid FilialId { get; set; }
     public Guid GrupoId { get; set; }
-    public bool Ativo { get; set; }
-    public DateTime UltimoAcesso { get; set; }
+    public SituacaoBase Situacao { get; set; }
     public string Foto { get; set; }
     public List<int> PermissoesCustomizadas { get; set; }
     public string Senha { get; set; }

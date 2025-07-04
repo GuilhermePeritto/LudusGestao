@@ -1,4 +1,5 @@
 using LudusGestao.Domain.Entities.Base;
+using LudusGestao.Domain.Enums;
 using LudusGestao.Domain.ValueObjects;
 using System;
 using System.Collections.Generic;
@@ -14,8 +15,6 @@ namespace LudusGestao.Domain.Entities
         public ICollection<Filial> Filiais { get; set; }
         public int TenantId { get; set; }
         public DateTime DataCadastro { get; set; }
-        public SituacaoEmpresa Situacao { get; set; }
+        public SituacaoBase Situacao { get; set; }
     }
-
-    public enum SituacaoEmpresa { Ativa, Inativa }
 } 

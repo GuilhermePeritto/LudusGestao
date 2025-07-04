@@ -1,3 +1,4 @@
+using LudusGestao.Domain.Enums;
 using System;
 
 namespace LudusGestao.Application.DTOs.Cliente;
@@ -11,5 +12,5 @@ public class CreateClienteDTO
     public string Telefone { get; set; }
     public string Endereco { get; set; }
     public string Observacoes { get; set; }
-    public string Situacao { get; set; }
+    public SituacaoCliente Situacao { get; set; }
 } 

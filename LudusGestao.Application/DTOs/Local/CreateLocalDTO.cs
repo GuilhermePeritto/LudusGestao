@@ -3,6 +3,7 @@
 namespace LudusGestao.Application.DTOs.Local;
 using System;
 using System.Collections.Generic;
+using LudusGestao.Domain.Enums;
 
 public class CreateLocalDTO
 {
@@ -14,7 +15,7 @@ public class CreateLocalDTO
     public int? Capacidade { get; set; }
     public string Descricao { get; set; }
     public List<string> Comodidades { get; set; }
-    public string Situacao { get; set; }
+    public SituacaoLocal Situacao { get; set; }
     public string Cor { get; set; }
     public string HoraAbertura { get; set; }
     public string HoraFechamento { get; set; }

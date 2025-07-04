@@ -1,4 +1,6 @@
 using LudusGestao.Domain.Entities.Base;
+using LudusGestao.Domain.Enums;
+using LudusGestao.Domain.ValueObjects;
 using System;
 
 namespace LudusGestao.Domain.Entities
@@ -16,5 +18,4 @@ namespace LudusGestao.Domain.Entities
         public DateTime DataCadastro { get; set; }
         public int TenantId { get; set; }
     }
-    public enum SituacaoCliente { Ativo, Inativo }
 } 

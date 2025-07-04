@@ -2,14 +2,14 @@
 
 namespace LudusGestao.Application.DTOs.Recebivel;
 using System;
+using LudusGestao.Domain.Enums;
 
 public class CreateRecebivelDTO
 {
-    public string Cliente { get; set; }
     public Guid ClienteId { get; set; }
     public string Descricao { get; set; }
     public decimal Valor { get; set; }
     public DateTime DataVencimento { get; set; }
-    public string Situacao { get; set; }
+    public SituacaoRecebivel Situacao { get; set; }
     public Guid? ReservaId { get; set; }
 } 

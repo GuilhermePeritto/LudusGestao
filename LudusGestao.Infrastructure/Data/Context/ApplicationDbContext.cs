@@ -75,7 +75,7 @@ namespace LudusGestao.Infrastructure.Data.Context
                     Email = new LudusGestao.Domain.ValueObjects.Email("contato@ludussistemas.com.br"),
                     Endereco = new LudusGestao.Domain.ValueObjects.Endereco("Rua da Inovação", "500", "Centro", "TechCity", "SP", "12345-678"),
                     DataCadastro = DateTime.UtcNow,
-                    Situacao = SituacaoEmpresa.Ativa,
+                    Situacao = LudusGestao.Domain.Enums.SituacaoBase.Ativo,
                     TenantId = 1
                 };
                 Empresas.Add(empresa);
@@ -94,7 +94,7 @@ namespace LudusGestao.Infrastructure.Data.Context
                     Email = "matriz@ludussistemas.com.br",
                     Cnpj = "12345678000199",
                     Responsavel = "Administrador",
-                    Ativo = true,
+                    Situacao = LudusGestao.Domain.Enums.SituacaoBase.Ativo,
                     DataAbertura = DateTime.UtcNow.AddYears(-2),
                     DataCriacao = DateTime.UtcNow.AddYears(-2),
                     DataAtualizacao = DateTime.UtcNow,
@@ -115,7 +115,7 @@ namespace LudusGestao.Infrastructure.Data.Context
                     Endereco = "Rua do Cliente, 123",
                     Observacoes = "Cliente importante da Ludus",
                     DataCadastro = DateTime.UtcNow,
-                    Situacao = SituacaoCliente.Ativo,
+                    Situacao = LudusGestao.Domain.Enums.SituacaoCliente.Ativo,
                     TenantId = 1
                 };
                 Clientes.Add(cliente);
@@ -132,7 +132,7 @@ namespace LudusGestao.Infrastructure.Data.Context
                     Capacidade = 30,
                     Descricao = "Sala de treinamento equipada com recursos multimídia.",
                     Comodidades = new List<string> { "Projetor", "Ar-condicionado", "Cadeiras Ergonômicas" },
-                    Situacao = SituacaoLocal.Ativo,
+                    Situacao = LudusGestao.Domain.Enums.SituacaoLocal.Ativo,
                     Cor = "#4CAF50",
                     HoraAbertura = "09:00",
                     HoraFechamento = "18:00",
@@ -152,7 +152,7 @@ namespace LudusGestao.Infrastructure.Data.Context
                     Data = DateTime.UtcNow.AddDays(2),
                     HoraInicio = "10:00",
                     HoraFim = "12:00",
-                    Situacao = SituacaoReserva.Confirmada,
+                    Situacao = LudusGestao.Domain.Enums.SituacaoReserva.Confirmado,
                     Cor = "#4CAF50",
                     Esporte = "Treinamento Corporativo",
                     Observacoes = "Reserva para treinamento de equipe Ludus.",
@@ -165,12 +165,11 @@ namespace LudusGestao.Infrastructure.Data.Context
                 var recebivel = new Recebivel
                 {
                     Id = Guid.NewGuid(),
-                    Cliente = cliente.Nome,
                     ClienteId = cliente.Id,
                     Descricao = "Pagamento referente à reserva de sala.",
                     Valor = 400.00m,
                     DataVencimento = DateTime.UtcNow.AddDays(10),
-                    Situacao = SituacaoRecebivel.Pendente,
+                    Situacao = LudusGestao.Domain.Enums.SituacaoRecebivel.Aberto,
                     ReservaId = reserva.Id,
                     DataCadastro = DateTime.UtcNow,
                     TenantId = 1
@@ -189,7 +188,7 @@ namespace LudusGestao.Infrastructure.Data.Context
                     Cargo = "Administrador",
                     FilialId = filial.Id,
                     GrupoId = Guid.NewGuid(),
-                    Ativo = true,
+                    Situacao = LudusGestao.Domain.Enums.SituacaoBase.Ativo,
                     UltimoAcesso = DateTime.UtcNow,
                     Foto = "",
                     PermissoesCustomizadas = new List<int>(),

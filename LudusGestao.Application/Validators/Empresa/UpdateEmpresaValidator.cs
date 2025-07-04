@@ -6,7 +6,6 @@ namespace LudusGestao.Application.Validators.Empresa
     {
         public UpdateEmpresaValidator()
         {
-            RuleFor(x => x.Id).NotEmpty();
             RuleFor(x => x.Nome).NotEmpty();
             RuleFor(x => x.Email).EmailAddress();
         }

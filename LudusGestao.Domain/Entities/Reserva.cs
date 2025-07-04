@@ -1,4 +1,5 @@
 using LudusGestao.Domain.Entities.Base;
+using LudusGestao.Domain.Enums;
 using System;
 
 namespace LudusGestao.Domain.Entities
@@ -9,6 +10,8 @@ namespace LudusGestao.Domain.Entities
         public Cliente Cliente { get; set; }
         public Guid LocalId { get; set; }
         public Local Local { get; set; }
+        public Guid? UsuarioId { get; set; }
+        public Usuario Usuario { get; set; }
         public DateTime Data { get; set; }
         public string HoraInicio { get; set; }
         public string HoraFim { get; set; }
@@ -20,6 +23,4 @@ namespace LudusGestao.Domain.Entities
         public DateTime DataCadastro { get; set; }
         public int TenantId { get; set; }
     }
-
-    public enum SituacaoReserva { Confirmada, Pendente, Cancelada }
 } 

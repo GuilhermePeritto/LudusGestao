@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Security.Claims;
+using LudusGestao.Domain.Enums;
 
 namespace LudusGestao.API.Controllers;
 [ApiController]
@@ -50,7 +51,7 @@ public class GerencialmentoController : ControllerBase
             Email = new LudusGestao.Domain.ValueObjects.Email(empresaDto.Email),
             Endereco = new LudusGestao.Domain.ValueObjects.Endereco(empresaDto.Endereco, "", "", "", "", ""),
             DataCadastro = DateTime.UtcNow,
-            Situacao = SituacaoEmpresa.Ativa,
+            Situacao = SituacaoBase.Ativo,
             TenantId = novoTenantId
         };
         _db.Empresas.Add(empresa);
@@ -70,7 +71,7 @@ public class GerencialmentoController : ControllerBase
             Email = $"matriz@{empresa.Nome.Replace(" ", "").ToLower()}.com.br",
             Cnpj = empresaDto.Cnpj,
             Responsavel = "Administrador",
-            Ativo = true,
+            Situacao = SituacaoBase.Ativo,
             DataAbertura = DateTime.UtcNow,
             DataCriacao = DateTime.UtcNow,
             DataAtualizacao = DateTime.UtcNow,
@@ -93,7 +94,7 @@ public class GerencialmentoController : ControllerBase
             Cargo = "Administrador",
             FilialId = filial.Id,
             GrupoId = Guid.NewGuid(),
-            Ativo = true,
+            Situacao = SituacaoBase.Ativo,
             UltimoAcesso = DateTime.UtcNow,
             Foto = "",
             PermissoesCustomizadas = new List<int>(),
@@ -113,23 +114,17 @@ public class GerencialmentoController : ControllerBase
             Nome = empresa.Nome,
             Cnpj = empresa.Cnpj,
             Email = empresa.Email.Endereco,
-            Endereco = empresa.Endereco.Rua
+            Endereco = empresa.Endereco.Rua,
+            Situacao = empresa.Situacao
         };
         var filialRetorno = new FilialDTO
         {
             Id = filial.Id,
             Nome = filial.Nome,
-            Codigo = filial.Codigo,
             Endereco = filial.Endereco,
-            Cidade = filial.Cidade,
-            Estado = filial.Estado,
-            Cep = filial.Cep,
             Telefone = filial.Telefone,
             Email = filial.Email,
-            Cnpj = filial.Cnpj,
-            Responsavel = filial.Responsavel,
-            Ativo = filial.Ativo,
-            DataAbertura = filial.DataAbertura,
+            Situacao = filial.Situacao,
             EmpresaId = empresa.Id
         };
         var usuarioRetorno = new UsuarioDTO
@@ -141,7 +136,7 @@ public class GerencialmentoController : ControllerBase
             Cargo = usuario.Cargo,
             FilialId = usuario.FilialId,
             GrupoId = usuario.GrupoId,
-            Ativo = usuario.Ativo,
+            Situacao = usuario.Situacao,
             UltimoAcesso = usuario.UltimoAcesso,
             Foto = usuario.Foto,
             PermissoesCustomizadas = usuario.PermissoesCustomizadas,
