@@ -1,0 +1,15 @@
+version: '3.8'
+services:
+  postgres:
+    image: postgres:15
+    container_name: sistema_reservas_db
+    environment:
+      POSTGRES_USER: reservas
+      POSTGRES_PASSWORD: reservas123
+      POSTGRES_DB: reservasdb
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+volumes:
+  pgdata:

@@ -1,0 +1,11 @@
+C:\Users\guilherme.peritto\Documents\LudusGestao\LudusGestao.Domain\bin\Debug\net8.0\LudusGestao.Domain.deps.json
+C:\Users\guilherme.peritto\Documents\LudusGestao\LudusGestao.Domain\bin\Debug\net8.0\LudusGestao.Domain.dll
+C:\Users\guilherme.peritto\Documents\LudusGestao\LudusGestao.Domain\bin\Debug\net8.0\LudusGestao.Domain.pdb
+C:\Users\guilherme.peritto\Documents\LudusGestao\LudusGestao.Domain\obj\Debug\net8.0\LudusGestao.Domain.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\guilherme.peritto\Documents\LudusGestao\LudusGestao.Domain\obj\Debug\net8.0\LudusGestao.Domain.AssemblyInfoInputs.cache
+C:\Users\guilherme.peritto\Documents\LudusGestao\LudusGestao.Domain\obj\Debug\net8.0\LudusGestao.Domain.AssemblyInfo.cs
+C:\Users\guilherme.peritto\Documents\LudusGestao\LudusGestao.Domain\obj\Debug\net8.0\LudusGestao.Domain.csproj.CoreCompileInputs.cache
+C:\Users\guilherme.peritto\Documents\LudusGestao\LudusGestao.Domain\obj\Debug\net8.0\LudusGestao.Domain.dll
+C:\Users\guilherme.peritto\Documents\LudusGestao\LudusGestao.Domain\obj\Debug\net8.0\refint\LudusGestao.Domain.dll
+C:\Users\guilherme.peritto\Documents\LudusGestao\LudusGestao.Domain\obj\Debug\net8.0\LudusGestao.Domain.pdb
+C:\Users\guilherme.peritto\Documents\LudusGestao\LudusGestao.Domain\obj\Debug\net8.0\ref\LudusGestao.Domain.dll

@@ -1,0 +1,15 @@
+{
+  "version": 2,
+  "dgSpecHash": "kUZu36USlJM=",
+  "success": true,
+  "projectFilePath": "C:\\Users\\guilherme.peritto\\Documents\\LudusGestao\\LudusGestao.Application\\LudusGestao.Application.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\guilherme.peritto\\.nuget\\packages\\automapper\\12.0.1\\automapper.12.0.1.nupkg.sha512",
+    "C:\\Users\\guilherme.peritto\\.nuget\\packages\\fluentvalidation\\11.7.0\\fluentvalidation.11.7.0.nupkg.sha512",
+    "C:\\Users\\guilherme.peritto\\.nuget\\packages\\mediatr\\12.1.1\\mediatr.12.1.1.nupkg.sha512",
+    "C:\\Users\\guilherme.peritto\\.nuget\\packages\\mediatr.contracts\\2.0.1\\mediatr.contracts.2.0.1.nupkg.sha512",
+    "C:\\Users\\guilherme.peritto\\.nuget\\packages\\microsoft.csharp\\4.7.0\\microsoft.csharp.4.7.0.nupkg.sha512",
+    "C:\\Users\\guilherme.peritto\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\6.0.0\\microsoft.extensions.dependencyinjection.abstractions.6.0.0.nupkg.sha512"
+  ],
+  "logs": []
+}

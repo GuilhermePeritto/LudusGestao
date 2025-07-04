@@ -1,0 +1,11 @@
+using LudusGestao.Domain.Entities;
+using LudusGestao.Domain.Interfaces.Repositories.Base;
+
+namespace LudusGestao.Domain.Interfaces.Repositories
+{
+    public interface IUsuarioRepository : ITenantRepository<Usuario>
+    {
+        Task<Usuario?> ObterPorEmail(string email);
+        Task<Usuario?> ObterPorEmailGlobal(string email);
+    }
+} 
