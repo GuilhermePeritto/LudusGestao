@@ -1,0 +1,496 @@
+# PROMPT PARA CONSTRUÇÃO DO FRONTEND - SISTEMA LUDUS GESTÃO
+
+## DESCRIÇÃO DO SISTEMA
+Sistema de gestão multitenancy para administração de empresas, filiais, clientes, reservas, locais e recebíveis. O sistema possui autenticação JWT e controle de tenant por usuário.
+
+## BASE URL DA API
+http://localhost:5000/api
+
+## AUTENTICAÇÃO
+Todas as requisições (exceto login) devem incluir o header:
+Authorization: Bearer {access_token}
+
+## ENDPOINTS E ENTIDADES
+
+### 1. AUTENTICAÇÃO
+Base URL: /api/autenticacao
+
+#### POST /api/autenticacao/entrar
+- Descrição: Login do usuário
+- Body:
+{
+  "email": "string",
+  "senha": "string"
+}
+- Response (200):
+{
+  "accessToken": "string",
+  "expiraEm": "2024-01-01T10:00:00Z"
+}
+
+#### POST /api/autenticacao/refresh
+- Descrição: Renovar token de acesso
+- Body:
+{
+  "refreshToken": "string"
+}
+- Response (200):
+{
+  "accessToken": "string",
+  "refreshToken": "string",
+  "expiraEm": "2024-01-01T10:00:00Z"
+}
+
+### 2. GERENCIAMENTO (TENANT MASTER)
+Base URL: /api/gerencialmento
+Autorização: Apenas TenantId = 1
+
+#### POST /api/gerencialmento/novo-cliente
+- Descrição: Criar nova empresa com filial e usuário admin
+- Body:
+{
+  "nome": "string",
+  "cnpj": "string",
+  "email": "string",
+  "endereco": "string"
+}
+- Response (200):
+{
+  "tenantId": 2,
+  "empresa": {
+    "id": "guid",
+    "nome": "string",
+    "cnpj": "string",
+    "email": "string",
+    "endereco": "string"
+  },
+  "filialMatriz": {
+    "id": "guid",
+    "nome": "string",
+    "codigo": "string",
+    "endereco": "string",
+    "cidade": "string",
+    "estado": "string",
+    "cep": "string",
+    "telefone": "string",
+    "email": "string",
+    "cnpj": "string",
+    "responsavel": "string",
+    "ativo": true,
+    "dataAbertura": "2024-01-01T10:00:00Z",
+    "empresaId": "guid"
+  },
+  "usuarioAdmin": {
+    "id": "guid",
+    "nome": "string",
+    "email": "string",
+    "telefone": "string",
+    "cargo": "string",
+    "filialId": "guid",
+    "grupoId": "guid",
+    "ativo": true,
+    "ultimoAcesso": "2024-01-01T10:00:00Z",
+    "foto": "string",
+    "permissoesCustomizadas": [1, 2, 3],
+    "dataCadastro": "2024-01-01T10:00:00Z"
+  },
+  "senhaPadrao": "string"
+}
+
+#### POST /api/gerencialmento/alterar-senha
+- Descrição: Alterar senha de usuário
+- Body:
+{
+  "email": "string",
+  "novaSenha": "string"
+}
+
+### 3. ENTIDADES CRUD (TODAS HERDAM DE BaseCrudController)
+
+#### CLIENTES
+Base URL: /api/clientes
+
+DTOs:
+// ClienteDTO (Response)
+{
+  id: string;
+  subtitulo: string;
+  nome: string;
+  documento: string;
+  email: string;
+  telefone: string;
+  endereco: string;
+  observacoes: string;
+  situacao: string;
+  dataCadastro: string;
+}
+
+// CreateClienteDTO (Request)
+{
+  subtitulo: string;
+  nome: string;
+  documento: string;
+  email: string;
+  telefone: string;
+  endereco: string;
+  observacoes: string;
+  situacao: string;
+}
+
+// UpdateClienteDTO (Request)
+{
+  subtitulo: string;
+  nome: string;
+  documento: string;
+  email: string;
+  telefone: string;
+  endereco: string;
+  observacoes: string;
+  situacao: string;
+}
+
+Endpoints:
+- GET /api/clientes - Listar com paginação
+- GET /api/clientes/{id} - Obter por ID
+- POST /api/clientes - Criar
+- PUT /api/clientes/{id} - Atualizar
+- DELETE /api/clientes/{id} - Remover
+
+#### EMPRESAS
+Base URL: /api/empresas
+
+DTOs:
+// EmpresaDTO (Response)
+{
+  id: string;
+  nome: string;
+  cnpj: string;
+  email: string;
+  endereco: string;
+}
+
+// CreateEmpresaDTO (Request)
+{
+  nome: string;
+  cnpj: string;
+  email: string;
+  endereco: string;
+}
+
+// UpdateEmpresaDTO (Request)
+{
+  nome: string;
+  cnpj: string;
+  email: string;
+  endereco: string;
+}
+
+#### FILIAIS
+Base URL: /api/filiais
+
+DTOs:
+// FilialDTO (Response)
+{
+  id: string;
+  nome: string;
+  codigo: string;
+  endereco: string;
+  cidade: string;
+  estado: string;
+  cep: string;
+  telefone: string;
+  email: string;
+  cnpj: string;
+  responsavel: string;
+  ativo: boolean;
+  dataAbertura: string;
+  empresaId: string;
+}
+
+// CreateFilialDTO (Request)
+{
+  nome: string;
+  codigo: string;
+  endereco: string;
+  cidade: string;
+  estado: string;
+  cep: string;
+  telefone: string;
+  email: string;
+  cnpj: string;
+  responsavel: string;
+  ativo: boolean;
+  dataAbertura: string;
+  empresaId: string;
+}
+
+// UpdateFilialDTO (Request)
+{
+  nome: string;
+  codigo: string;
+  endereco: string;
+  cidade: string;
+  estado: string;
+  cep: string;
+  telefone: string;
+  email: string;
+  cnpj: string;
+  responsavel: string;
+  ativo: boolean;
+  dataAbertura: string;
+  empresaId: string;
+}
+
+#### USUÁRIOS
+Base URL: /api/usuarios
+
+DTOs:
+// UsuarioDTO (Response)
+{
+  id: string;
+  nome: string;
+  email: string;
+  telefone: string;
+  cargo: string;
+  filialId: string;
+  grupoId: string;
+  ativo: boolean;
+  ultimoAcesso: string;
+  foto: string;
+  permissoesCustomizadas: number[];
+  dataCadastro: string;
+}
+
+// CreateUsuarioDTO (Request)
+{
+  nome: string;
+  email: string;
+  telefone: string;
+  cargo: string;
+  filialId: string;
+  grupoId: string;
+  ativo: boolean;
+  foto: string;
+  permissoesCustomizadas: number[];
+}
+
+// UpdateUsuarioDTO (Request)
+{
+  nome: string;
+  email: string;
+  telefone: string;
+  cargo: string;
+  filialId: string;
+  grupoId: string;
+  ativo: boolean;
+  foto: string;
+  permissoesCustomizadas: number[];
+}
+
+#### RESERVAS
+Base URL: /api/reservas
+
+DTOs:
+// ReservaDTO (Response)
+{
+  id: string;
+  cliente: string;
+  local: string;
+  data: string;
+  horaInicio: string;
+  horaFim: string;
+  situacao: string;
+  cor: string;
+  esporte: string;
+  observacoes: string;
+  valor: number;
+  dataCadastro: string;
+  clienteId: string;
+  localId: string;
+}
+
+// CreateReservaDTO (Request)
+{
+  cliente: string;
+  local: string;
+  data: string;
+  horaInicio: string;
+  horaFim: string;
+  situacao: string;
+  cor: string;
+  esporte: string;
+  observacoes: string;
+  valor: number;
+  clienteId: string;
+  localId: string;
+}
+
+// UpdateReservaDTO (Request)
+{
+  cliente: string;
+  local: string;
+  data: string;
+  horaInicio: string;
+  horaFim: string;
+  situacao: string;
+  cor: string;
+  esporte: string;
+  observacoes: string;
+  valor: number;
+  clienteId: string;
+  localId: string;
+}
+
+#### LOCAIS
+Base URL: /api/locais
+
+DTOs:
+// LocalDTO (Response)
+{
+  id: string;
+  subtitulo: string;
+  nome: string;
+  tipo: string;
+  intervalo: number;
+  valorHora: number;
+  capacidade: number | null;
+  descricao: string;
+  comodidades: string[];
+  situacao: string;
+  cor: string;
+  horaAbertura: string;
+  horaFechamento: string;
+  filialId: string;
+}
+
+// CreateLocalDTO (Request)
+{
+  subtitulo: string;
+  nome: string;
+  tipo: string;
+  intervalo: number;
+  valorHora: number;
+  capacidade: number | null;
+  descricao: string;
+  comodidades: string[];
+  situacao: string;
+  cor: string;
+  horaAbertura: string;
+  horaFechamento: string;
+  filialId: string;
+}
+
+// UpdateLocalDTO (Request)
+{
+  subtitulo: string;
+  nome: string;
+  tipo: string;
+  intervalo: number;
+  valorHora: number;
+  capacidade: number | null;
+  descricao: string;
+  comodidades: string[];
+  situacao: string;
+  cor: string;
+  horaAbertura: string;
+  horaFechamento: string;
+  filialId: string;
+}
+
+#### RECEBÍVEIS
+Base URL: /api/recebiveis
+
+DTOs:
+// RecebivelDTO (Response)
+{
+  id: string;
+  cliente: string;
+  clienteId: string;
+  descricao: string;
+  valor: number;
+  dataVencimento: string;
+  situacao: string;
+  reservaId: string | null;
+  dataCadastro: string;
+}
+
+// CreateRecebivelDTO (Request)
+{
+  cliente: string;
+  clienteId: string;
+  descricao: string;
+  valor: number;
+  dataVencimento: string;
+  situacao: string;
+  reservaId: string | null;
+}
+
+// UpdateRecebivelDTO (Request)
+{
+  cliente: string;
+  clienteId: string;
+  descricao: string;
+  valor: number;
+  dataVencimento: string;
+  situacao: string;
+  reservaId: string | null;
+}
+
+## RESPOSTAS PADRÃO DA API
+
+### Resposta de Sucesso (ApiResponse)
+{
+  "success": true,
+  "message": "string",
+  "data": {}
+}
+
+### Resposta Paginada (ApiPagedResponse)
+{
+  "success": true,
+  "message": "string",
+  "data": [],
+  "pageNumber": 1,
+  "pageSize": 10,
+  "totalCount": 100,
+  "totalPages": 10
+}
+
+### Resposta de Erro
+{
+  "success": false,
+  "message": "Mensagem de erro",
+  "data": null
+}
+
+## CÓDIGOS DE STATUS HTTP
+- 200 - Sucesso
+- 201 - Criado
+- 204 - Sem conteúdo (DELETE)
+- 400 - Bad Request (validação)
+- 401 - Não autorizado
+- 403 - Proibido
+- 404 - Não encontrado
+- 500 - Erro interno
+
+## PARÂMETROS DE PAGINAÇÃO
+Para endpoints de listagem, use query parameters:
+GET /api/clientes?pageNumber=1&pageSize=10
+
+## CARACTERÍSTICAS IMPORTANTES
+1. Multitenancy: Cada usuário só acessa dados do seu tenant
+2. Autenticação JWT: Token expira em 2 horas
+3. Refresh Token: Válido por 7 dias
+4. Datas automáticas: DataCadastro e DataAtualizacao são tratadas internamente
+5. Validação de Tenant: Nenhuma entidade pode ser salva com TenantId = 0
+6. Mensagens padronizadas: Todas as respostas seguem o padrão ApiResponse
+
+## SUGESTÕES PARA O FRONTEND
+1. Implementar interceptor para adicionar token automaticamente
+2. Implementar refresh automático do token
+3. Criar componentes reutilizáveis para CRUD
+4. Implementar validação de formulários
+5. Criar dashboard com gráficos e métricas
+6. Implementar sistema de notificações
+7. Criar calendário para visualização de reservas
+8. Implementar filtros avançados nas listagens 
