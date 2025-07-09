@@ -1,13 +1,46 @@
+previews:
+  generation: automatic
+
 services:
   - type: web
+    runtime: docker
     name: ludus-gestao-api
-    env: docker
+    repo: https://github.com/GuilhermePeritto/LudusGestao.git
+    branch: main
+    region: sa-east-1
     plan: free
     dockerfilePath: ./docker/Dockerfile
     dockerContext: .
     healthCheckPath: /health
+    autoDeploy: true
+    maxShutdownDelaySeconds: 30
+    scaling:
+      minInstances: 1
+      maxInstances: 1
     envVars:
       - key: ASPNETCORE_ENVIRONMENT
         value: Production
       - key: ASPNETCORE_URLS
-        value: http://+:10000 
+        value: http://+:10000
+      - key: ConnectionStrings__DefaultConnection
+        value: Host=ep-floral-bush-ac4sco2u-pooler.sa-east-1.aws.neon.tech; Database=neondb; Username=neondb_owner; Password=npg_SeX2YzK8jmlr; SSL Mode=VerifyFull; Channel Binding=Require;
+      - key: Jwt__Issuer
+        value: SistemaReservasIssuer
+      - key: Jwt__Audience
+        value: SistemaReservasAudience
+      - key: Jwt__Key
+        value: ludus-sistemas-chave-super-secreta-2024
+    headers:
+      - path: /*
+        name: X-Frame-Options
+        value: DENY
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+      - path: /*
+        name: X-XSS-Protection
+        value: 1; mode=block
+    routes:
+      - type: rewrite
+        source: /api/*
+        destination: /api/* 
