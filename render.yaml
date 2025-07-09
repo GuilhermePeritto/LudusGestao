@@ -10,6 +10,4 @@ services:
       - key: ASPNETCORE_ENVIRONMENT
         value: Production
       - key: ASPNETCORE_URLS
-        value: http://+:10000
-    buildCommand: docker build -f docker/Dockerfile -t ludus-gestao .
-    startCommand: docker run -p 10000:10000 ludus-gestao 
+        value: http://+:10000 

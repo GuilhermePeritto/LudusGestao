@@ -2,8 +2,9 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-# Copy NuGet configuration first
-COPY NuGet.config ./
+# Clear NuGet cache and set environment
+RUN dotnet nuget locals all --clear
+ENV NUGET_PACKAGES=/src/packages
 
 # Copy solution and project files
 COPY LudusGestao.sln ./
@@ -12,18 +13,18 @@ COPY LudusGestao.Application/LudusGestao.Application.csproj ./LudusGestao.Applic
 COPY LudusGestao.Domain/LudusGestao.Domain.csproj ./LudusGestao.Domain/
 COPY LudusGestao.Infrastructure/LudusGestao.Infrastructure.csproj ./LudusGestao.Infrastructure/
 
-# Restore dependencies with explicit configuration
-RUN dotnet restore --verbosity minimal --configfile NuGet.config
+# Restore dependencies with clean environment
+RUN dotnet restore --packages /src/packages --verbosity minimal
 
 # Copy source code
 COPY . .
 
-# Build the application with explicit configuration
-RUN dotnet build -c Release --no-restore --verbosity minimal --configfile NuGet.config
+# Build the application
+RUN dotnet build -c Release --no-restore --verbosity minimal
 
 # Publish stage
 FROM build AS publish
-RUN dotnet publish LudusGestao.API/LudusGestao.API.csproj -c Release -o /app/publish --no-restore --configfile NuGet.config
+RUN dotnet publish LudusGestao.API/LudusGestao.API.csproj -c Release -o /app/publish --no-restore
 
 # Runtime stage
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
