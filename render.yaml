@@ -1,13 +1,10 @@
-previews:
-  generation: automatic
-
 services:
   - type: web
     runtime: docker
     name: ludus-gestao-api
     repo: https://github.com/GuilhermePeritto/LudusGestao.git
     branch: main
-    region: sa-east-1
+    region: oregon
     plan: free
     dockerfilePath: ./docker/Dockerfile
     dockerContext: .
