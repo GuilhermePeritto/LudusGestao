@@ -1,13 +1,11 @@
-# Build stage
+# Build stage - Linux native
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-# Clear all caches and set clean environment
-RUN dotnet nuget locals all --clear
-RUN rm -rf /root/.nuget /root/.local /tmp/NuGetScratch*
-ENV NUGET_PACKAGES=/src/packages
+# Linux-specific environment setup
 ENV DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1
 ENV DOTNET_CLI_TELEMETRY_OPTOUT=1
+ENV NUGET_PACKAGES=/src/packages
 
 # Copy solution and project files
 COPY LudusGestao.sln ./
@@ -16,20 +14,20 @@ COPY LudusGestao.Application/LudusGestao.Application.csproj ./LudusGestao.Applic
 COPY LudusGestao.Domain/LudusGestao.Domain.csproj ./LudusGestao.Domain/
 COPY LudusGestao.Infrastructure/LudusGestao.Infrastructure.csproj ./LudusGestao.Infrastructure/
 
-# Restore dependencies with clean environment
-RUN dotnet restore --packages /src/packages --verbosity minimal --force
+# Restore dependencies using Linux paths
+RUN dotnet restore --packages /src/packages
 
 # Copy source code
 COPY . .
 
-# Build the application with clean environment
-RUN dotnet build -c Release --no-restore --verbosity minimal --no-cache
+# Build the application
+RUN dotnet build -c Release --no-restore
 
 # Publish stage
 FROM build AS publish
-RUN dotnet publish LudusGestao.API/LudusGestao.API.csproj -c Release -o /app/publish --no-restore --no-cache
+RUN dotnet publish LudusGestao.API/LudusGestao.API.csproj -c Release -o /app/publish --no-restore
 
-# Runtime stage
+# Runtime stage - Linux native
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
 WORKDIR /app
 COPY --from=publish /app/publish .
