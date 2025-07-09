@@ -17,6 +17,5 @@ public class ClienteDTO
     public string Endereco { get; set; }
     public string Observacoes { get; set; }
     public SituacaoCliente Situacao { get; set; }
-    public DateTime DataCadastro { get; set; }
     public int TenantId { get; set; }
 } 

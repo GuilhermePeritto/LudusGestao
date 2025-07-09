@@ -22,6 +22,5 @@ public class RecebivelDTO
     public decimal Valor { get; set; }
     public DateTime DataVencimento { get; set; }
     public SituacaoRecebivel Situacao { get; set; }
-    public DateTime DataCadastro { get; set; }
     public int TenantId { get; set; }
 } 

@@ -18,7 +18,6 @@ namespace LudusGestao.Domain.Entities
         public string Responsavel { get; set; }
         public SituacaoBase Situacao { get; set; }
         public DateTime DataAbertura { get; set; }
-        public DateTime DataCadastro { get; set; }
         public int TenantId { get; set; }
         public Guid EmpresaId { get; set; }
         public Empresa Empresa { get; set; }

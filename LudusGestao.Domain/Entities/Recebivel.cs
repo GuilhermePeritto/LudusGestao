@@ -14,7 +14,6 @@ namespace LudusGestao.Domain.Entities
         public SituacaoRecebivel Situacao { get; set; }
         public Guid? ReservaId { get; set; }
         public Reserva Reserva { get; set; }
-        public DateTime DataCadastro { get; set; }
         public int TenantId { get; set; }
     }
 } 

@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using LudusGestao.Domain.Entities;
 using LudusGestao.Domain.Entities.Base;
 using LudusGestao.Domain.Interfaces.Services;
@@ -10,6 +11,7 @@ using BCrypt.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using LudusGestao.Domain.Common.Exceptions;
+
 
 namespace LudusGestao.Infrastructure.Data.Context
 {
@@ -53,6 +55,59 @@ namespace LudusGestao.Infrastructure.Data.Context
 
             modelBuilder.Entity<Empresa>().OwnsOne(e => e.Email);
             modelBuilder.Entity<Empresa>().OwnsOne(e => e.Endereco);
+            
+            // Configuração para List<string> Comodidades
+            modelBuilder.Entity<Local>()
+                .Property(l => l.Comodidades)
+                .HasConversion(
+                    v => string.Join(',', v),
+                    v => v.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList()
+                )
+                .Metadata.SetValueComparer(new ValueComparer<List<string>>(
+                    (c1, c2) => c1.SequenceEqual(c2),
+                    c => c.Aggregate(0, (a, v) => HashCode.Combine(a, v.GetHashCode())),
+                    c => c.ToList()));
+            
+            // Configuração para List<int> PermissoesCustomizadas
+            modelBuilder.Entity<Usuario>()
+                .Property(u => u.PermissoesCustomizadas)
+                .HasConversion(
+                    v => string.Join(',', v),
+                    v => v.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(int.Parse).ToList()
+                )
+                .Metadata.SetValueComparer(new ValueComparer<List<int>>(
+                    (c1, c2) => c1.SequenceEqual(c2),
+                    c => c.Aggregate(0, (a, v) => HashCode.Combine(a, v.GetHashCode())),
+                    c => c.ToList()));
+            
+            // Configuração para propriedades opcionais
+            modelBuilder.Entity<Usuario>()
+                .Property(u => u.Foto)
+                .IsRequired(false);
+            
+            modelBuilder.Entity<Cliente>()
+                .Property(c => c.Observacoes)
+                .IsRequired(false);
+            
+            modelBuilder.Entity<Reserva>()
+                .Property(r => r.Observacoes)
+                .IsRequired(false);
+            
+            modelBuilder.Entity<Local>()
+                .Property(l => l.Descricao)
+                .IsRequired(false);
+            
+            modelBuilder.Entity<Local>()
+                .Property(l => l.Capacidade)
+                .IsRequired(false);
+            
+            modelBuilder.Entity<Reserva>()
+                .Property(r => r.UsuarioId)
+                .IsRequired(false);
+            
+            modelBuilder.Entity<Recebivel>()
+                .Property(r => r.ReservaId)
+                .IsRequired(false);
         }
 
         private void SetTenantFilter<TEntity>(ModelBuilder modelBuilder) where TEntity : class, ITenantEntity
@@ -64,8 +119,8 @@ namespace LudusGestao.Infrastructure.Data.Context
 
         public void Seed()
         {
-            // Evitar duplicidade
-            if (!Empresas.Any())
+            // Evitar duplicidade - usa IgnoreQueryFilters para ignorar filtros de tenant
+            if (!Empresas.IgnoreQueryFilters().Any())
             {
                 var empresa = new Empresa
                 {
@@ -74,12 +129,11 @@ namespace LudusGestao.Infrastructure.Data.Context
                     Cnpj = "12345678000199",
                     Email = new LudusGestao.Domain.ValueObjects.Email("contato@ludussistemas.com.br"),
                     Endereco = new LudusGestao.Domain.ValueObjects.Endereco("Rua da Inovação", "500", "Centro", "TechCity", "SP", "12345-678"),
-                    DataCadastro = DateTime.UtcNow,
                     Situacao = LudusGestao.Domain.Enums.SituacaoBase.Ativo,
                     TenantId = 1
                 };
                 Empresas.Add(empresa);
-                SaveChanges(); // Salva a empresa para garantir o Id
+                base.SaveChanges(); // Usa SaveChanges da base para evitar validação
 
                 var filial = new Filial
                 {
@@ -96,13 +150,11 @@ namespace LudusGestao.Infrastructure.Data.Context
                     Responsavel = "Administrador",
                     Situacao = LudusGestao.Domain.Enums.SituacaoBase.Ativo,
                     DataAbertura = DateTime.UtcNow.AddYears(-2),
-                    DataCriacao = DateTime.UtcNow.AddYears(-2),
-                    DataAtualizacao = DateTime.UtcNow,
                     TenantId = 1
                 };
                 Filiais.Add(filial);
                 Entry(filial).Property("EmpresaId").CurrentValue = empresa.Id;
-                SaveChanges();
+                base.SaveChanges();
 
                 var cliente = new Cliente
                 {
@@ -114,12 +166,11 @@ namespace LudusGestao.Infrastructure.Data.Context
                     Telefone = "11988887777",
                     Endereco = "Rua do Cliente, 123",
                     Observacoes = "Cliente importante da Ludus",
-                    DataCadastro = DateTime.UtcNow,
                     Situacao = LudusGestao.Domain.Enums.SituacaoCliente.Ativo,
                     TenantId = 1
                 };
                 Clientes.Add(cliente);
-                SaveChanges();
+                base.SaveChanges();
 
                 var local = new Local
                 {
@@ -131,17 +182,16 @@ namespace LudusGestao.Infrastructure.Data.Context
                     ValorHora = 200.00m,
                     Capacidade = 30,
                     Descricao = "Sala de treinamento equipada com recursos multimídia.",
-                    Comodidades = new List<string> { "Projetor", "Ar-condicionado", "Cadeiras Ergonômicas" },
+                    Comodidades = new List<string> { "Projetor", "Ar-condicionado", "Cadeiras Ergonômicas" }.ToList(),
                     Situacao = LudusGestao.Domain.Enums.SituacaoLocal.Ativo,
                     Cor = "#4CAF50",
                     HoraAbertura = "09:00",
                     HoraFechamento = "18:00",
                     FilialId = filial.Id,
-                    TenantId = 1,
-                    DataCadastro = DateTime.UtcNow
+                    TenantId = 1
                 };
                 Locais.Add(local);
-                SaveChanges();
+                base.SaveChanges();
 
                 var reserva = new Reserva
                 {
@@ -157,10 +207,9 @@ namespace LudusGestao.Infrastructure.Data.Context
                     Esporte = "Treinamento Corporativo",
                     Observacoes = "Reserva para treinamento de equipe Ludus.",
                     Valor = 400.00m,
-                    DataCadastro = DateTime.UtcNow
                 };
                 Reservas.Add(reserva);
-                SaveChanges();
+                base.SaveChanges();
 
                 var recebivel = new Recebivel
                 {
@@ -171,11 +220,10 @@ namespace LudusGestao.Infrastructure.Data.Context
                     DataVencimento = DateTime.UtcNow.AddDays(10),
                     Situacao = LudusGestao.Domain.Enums.SituacaoRecebivel.Aberto,
                     ReservaId = reserva.Id,
-                    DataCadastro = DateTime.UtcNow,
                     TenantId = 1
                 };
                 Recebiveis.Add(recebivel);
-                SaveChanges();
+                base.SaveChanges();
 
                 var senha = "Ludus@2024";
                 var senhaHash = BCrypt.Net.BCrypt.HashPassword(senha);
@@ -190,16 +238,15 @@ namespace LudusGestao.Infrastructure.Data.Context
                     GrupoId = Guid.NewGuid(),
                     Situacao = LudusGestao.Domain.Enums.SituacaoBase.Ativo,
                     UltimoAcesso = DateTime.UtcNow,
-                    Foto = "",
-                    PermissoesCustomizadas = new List<int>(),
-                    DataCadastro = DateTime.UtcNow,
+                    Foto = null,
+                    PermissoesCustomizadas = new List<int> { },
                     SenhaHash = senhaHash,
                     TenantId = 1,
                     RefreshToken = null,
                     RefreshTokenExpiraEm = null
                 };
                 Usuarios.Add(usuario);
-                SaveChanges();
+                base.SaveChanges();
             }
         }
 

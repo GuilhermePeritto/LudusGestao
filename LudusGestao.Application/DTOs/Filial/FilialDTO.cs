@@ -21,6 +21,5 @@ public class FilialDTO
     public Guid EmpresaId { get; set; }
     public EmpresaDTO Empresa { get; set; }
     
-    public DateTime DataCadastro { get; set; }
     public int TenantId { get; set; }
 } 

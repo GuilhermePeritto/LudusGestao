@@ -13,6 +13,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Security.Claims;
 using LudusGestao.Domain.Enums;
+using LudusGestao.Application.Common.Models;
 
 namespace LudusGestao.API.Controllers;
 [ApiController]
@@ -30,10 +31,12 @@ public class GerencialmentoController : ControllerBase
     [HttpPost("novo-cliente")]
     public async Task<IActionResult> CriarNovoCliente([FromBody] CreateEmpresaDTO empresaDto)
     {
-        // Só permite TenantId = 1
-        var tenantIdClaim = User.Claims.FirstOrDefault(c => c.Type == "TenantId")?.Value;
-        if (tenantIdClaim == null || tenantIdClaim != "1")
-            return Forbid("Acesso restrito ao tenant master.");
+        try
+        {
+            // Só permite TenantId = 1
+            var tenantIdClaim = User.Claims.FirstOrDefault(c => c.Type == "TenantId")?.Value;
+            if (tenantIdClaim == null || tenantIdClaim != "1")
+                return StatusCode(403, new ApiResponse<object>(default) { Success = false, Message = "Acesso restrito ao tenant master" });
 
         // Busca o maior TenantId em todas as entidades que possuem TenantId
         var maxTenantId = await _db.Empresas.MaxAsync(e => (int?)e.TenantId) ?? 0;
@@ -50,7 +53,6 @@ public class GerencialmentoController : ControllerBase
             Cnpj = empresaDto.Cnpj,
             Email = new LudusGestao.Domain.ValueObjects.Email(empresaDto.Email),
             Endereco = new LudusGestao.Domain.ValueObjects.Endereco(empresaDto.Endereco, "", "", "", "", ""),
-            DataCadastro = DateTime.UtcNow,
             Situacao = SituacaoBase.Ativo,
             TenantId = novoTenantId
         };
@@ -85,11 +87,12 @@ public class GerencialmentoController : ControllerBase
         // Cria usuário admin
         var senha = "Admin@123";
         var senhaHash = BCrypt.Net.BCrypt.HashPassword(senha);
+        var emailUsuario = $"administrador@{empresa.Nome.Replace(" ", "").ToLower()}.com.br";
         var usuario = new Usuario
         {
             Id = Guid.NewGuid(),
             Nome = "Administrador",
-            Email = $"administrador@{empresa.Nome.Replace(" ", "").ToLower()}.com.br",
+            Email = emailUsuario,
             Telefone = "",
             Cargo = "Administrador",
             FilialId = filial.Id,
@@ -98,7 +101,6 @@ public class GerencialmentoController : ControllerBase
             UltimoAcesso = DateTime.UtcNow,
             Foto = "",
             PermissoesCustomizadas = new List<int>(),
-            DataCadastro = DateTime.UtcNow,
             SenhaHash = senhaHash,
             TenantId = novoTenantId,
             RefreshToken = null,
@@ -139,38 +141,51 @@ public class GerencialmentoController : ControllerBase
             Situacao = usuario.Situacao,
             UltimoAcesso = usuario.UltimoAcesso,
             Foto = usuario.Foto,
-            PermissoesCustomizadas = usuario.PermissoesCustomizadas,
-            DataCadastro = usuario.DataCadastro
+            PermissoesCustomizadas = usuario.PermissoesCustomizadas
         };
 
-        return Ok(new
+        var resultado = new
         {
             TenantId = novoTenantId,
             Empresa = empresaRetorno,
             FilialMatriz = filialRetorno,
             UsuarioAdmin = usuarioRetorno,
             SenhaPadrao = senha
-        });
+        };
+        
+        return Ok(new ApiResponse<object>(resultado, "Novo cliente criado com sucesso"));
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new ApiResponse<object>(default) { Success = false, Message = "Erro interno do servidor" });
+        }
     }
 
     [HttpPost("alterar-senha")]
     public async Task<IActionResult> AlterarSenha([FromBody] AlterarSenhaRequest dto)
     {
-        // Só permite TenantId = 1
-        var tenantIdClaim = User.Claims.FirstOrDefault(c => c.Type == "TenantId")?.Value;
-        if (tenantIdClaim == null || tenantIdClaim != "1")
-            return Forbid("Acesso restrito ao tenant master.");
+        try
+        {
+            // Só permite TenantId = 1
+            var tenantIdClaim = User.Claims.FirstOrDefault(c => c.Type == "TenantId")?.Value;
+            if (tenantIdClaim == null || tenantIdClaim != "1")
+                return StatusCode(403, new ApiResponse<object>(default) { Success = false, Message = "Acesso restrito ao tenant master" });
 
-        if (string.IsNullOrWhiteSpace(dto.Email) || string.IsNullOrWhiteSpace(dto.NovaSenha))
-            return BadRequest("Email e nova senha são obrigatórios.");
+            if (string.IsNullOrWhiteSpace(dto.Email) || string.IsNullOrWhiteSpace(dto.NovaSenha))
+                return BadRequest(new ApiResponse<object>(default) { Success = false, Message = "Email e nova senha são obrigatórios" });
 
-        var usuario = await _db.Usuarios.FirstOrDefaultAsync(u => u.Email == dto.Email);
-        if (usuario == null)
-            return NotFound("Usuário não encontrado.");
+            var usuario = await _db.Usuarios.FirstOrDefaultAsync(u => u.Email == dto.Email);
+            if (usuario == null)
+                return NotFound(new ApiResponse<object>(default) { Success = false, Message = "Usuário não encontrado" });
 
-        usuario.SenhaHash = BCrypt.Net.BCrypt.HashPassword(dto.NovaSenha);
-        await _db.SaveChangesAsync();
-        return Ok("Senha alterada com sucesso.");
+            usuario.SenhaHash = BCrypt.Net.BCrypt.HashPassword(dto.NovaSenha);
+            await _db.SaveChangesAsync();
+            return Ok(new ApiResponse<object>(default, "Senha alterada com sucesso"));
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new ApiResponse<object>(default) { Success = false, Message = "Erro interno do servidor" });
+        }
     }
 }
 

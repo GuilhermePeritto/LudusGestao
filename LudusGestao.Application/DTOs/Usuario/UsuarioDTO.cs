@@ -10,9 +10,7 @@ public class UsuarioDTO
     public DateTime? DataAtualizacao { get; set; }
     public string Nome { get; set; }
     public string Email { get; set; }
-    public string Username { get; set; }
     public SituacaoBase Situacao { get; set; }
-    public DateTime DataCadastro { get; set; }
     public int TenantId { get; set; }
     public string Telefone { get; set; }
     public string Cargo { get; set; }

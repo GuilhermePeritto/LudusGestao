@@ -29,6 +29,5 @@ public class LocalDTO
     public Guid FilialId { get; set; }
     public FilialDTO Filial { get; set; }
     
-    public DateTime DataCadastro { get; set; }
     public int TenantId { get; set; }
 } 

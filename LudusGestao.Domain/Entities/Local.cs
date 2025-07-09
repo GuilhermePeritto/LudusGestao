@@ -22,6 +22,5 @@ namespace LudusGestao.Domain.Entities
         public Guid FilialId { get; set; }
         public Filial Filial { get; set; }
         public int TenantId { get; set; }
-        public DateTime DataCadastro { get; set; }
     }
 } 

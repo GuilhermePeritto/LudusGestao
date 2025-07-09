@@ -9,7 +9,6 @@ namespace LudusGestao.Domain.Entities
     {
         public string Nome { get; set; }
         public string Email { get; set; }
-        public string Username { get; set; }
         public string Telefone { get; set; }
         public string Cargo { get; set; }
         public Guid FilialId { get; set; }
@@ -18,7 +17,6 @@ namespace LudusGestao.Domain.Entities
         public DateTime UltimoAcesso { get; set; }
         public string Foto { get; set; }
         public List<int> PermissoesCustomizadas { get; set; }
-        public DateTime DataCadastro { get; set; }
         public string SenhaHash { get; set; }
         public int TenantId { get; set; }
         public string? RefreshToken { get; set; }

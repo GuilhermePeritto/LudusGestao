@@ -16,7 +16,6 @@ namespace LudusGestao.Application.DTOs.Empresa
         public string Telefone { get; set; }
         public string Email { get; set; }
         public SituacaoBase Situacao { get; set; }
-        public DateTime DataCadastro { get; set; }
         public int TenantId { get; set; }
     }
 } 

@@ -20,7 +20,6 @@ namespace LudusGestao.Domain.Entities
         public string Esporte { get; set; }
         public string Observacoes { get; set; }
         public decimal Valor { get; set; }
-        public DateTime DataCadastro { get; set; }
         public int TenantId { get; set; }
     }
 } 

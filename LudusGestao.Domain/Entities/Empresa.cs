@@ -14,7 +14,6 @@ namespace LudusGestao.Domain.Entities
         public Endereco Endereco { get; set; }
         public ICollection<Filial> Filiais { get; set; }
         public int TenantId { get; set; }
-        public DateTime DataCadastro { get; set; }
         public SituacaoBase Situacao { get; set; }
     }
 } 
