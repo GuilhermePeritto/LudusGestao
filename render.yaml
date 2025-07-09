@@ -13,10 +13,6 @@ services:
     dockerContext: .
     healthCheckPath: /health
     autoDeploy: true
-    maxShutdownDelaySeconds: 30
-    scaling:
-      minInstances: 1
-      maxInstances: 1
     envVars:
       - key: ASPNETCORE_ENVIRONMENT
         value: Production
@@ -29,18 +25,4 @@ services:
       - key: Jwt__Audience
         value: SistemaReservasAudience
       - key: Jwt__Key
-        value: ludus-sistemas-chave-super-secreta-2024
-    headers:
-      - path: /*
-        name: X-Frame-Options
-        value: DENY
-      - path: /*
-        name: X-Content-Type-Options
-        value: nosniff
-      - path: /*
-        name: X-XSS-Protection
-        value: 1; mode=block
-    routes:
-      - type: rewrite
-        source: /api/*
-        destination: /api/* 
+        value: ludus-sistemas-chave-super-secreta-2024 
