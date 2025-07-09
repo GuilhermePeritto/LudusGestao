@@ -25,6 +25,11 @@ RUN dotnet publish LudusGestao.API/LudusGestao.API.csproj -c Release -o /app/pub
 # Runtime stage
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
 WORKDIR /app
+
+# Create non-root user for security
+RUN adduser --disabled-password --gecos '' appuser && chown -R appuser /app
+USER appuser
+
 COPY --from=publish /app/publish .
 
 # Expose port
