@@ -2,6 +2,9 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
+# Copy NuGet configuration first
+COPY NuGet.config ./
+
 # Copy solution and project files
 COPY LudusGestao.sln ./
 COPY LudusGestao.API/LudusGestao.API.csproj ./LudusGestao.API/
@@ -25,16 +28,13 @@ RUN dotnet publish LudusGestao.API/LudusGestao.API.csproj -c Release -o /app/pub
 # Runtime stage
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
 WORKDIR /app
-
-# Create non-root user for security
-RUN adduser --disabled-password --gecos '' appuser && chown -R appuser /app
-USER appuser
-
 COPY --from=publish /app/publish .
 
-# Expose port
-EXPOSE 80
-EXPOSE 443
+# Expose port (Render usa porta 10000)
+EXPOSE 10000
+
+# Set environment variable for port
+ENV ASPNETCORE_URLS=http://+:10000
 
 # Set entry point
 ENTRYPOINT ["dotnet", "LudusGestao.API.dll"]
