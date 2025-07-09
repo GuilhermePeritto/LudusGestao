@@ -1,26 +1,6 @@
 version: '3.8'
 
 services:
-  # Database
-  postgres:
-    image: postgres:15
-    container_name: ludus_gestao_db
-    environment:
-      POSTGRES_USER: ludus
-      POSTGRES_PASSWORD: ludus123
-      POSTGRES_DB: ludusdb
-    ports:
-      - "5432:5432"
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-    networks:
-      - ludus-network
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ludus"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-
   # API Application
   api:
     build:
@@ -32,16 +12,10 @@ services:
       - "5001:443"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ConnectionStrings__DefaultConnection=Host=postgres;Database=ludusdb;Username=ludus;Password=ludus123
-    depends_on:
-      postgres:
-        condition: service_healthy
+      # A connection string será lida do appsettings.json
     networks:
       - ludus-network
     restart: unless-stopped
-
-volumes:
-  pgdata:
 
 networks:
   ludus-network:
