@@ -1,0 +1,218 @@
+# Parâmetros de Filtro e Consulta - LudusGestao API
+
+## Estrutura Base dos Parâmetros
+
+A API utiliza a classe QueryParamsBase que define os seguintes parâmetros:
+
+- Fields: Campos específicos a retornar
+- Page: Número da página (padrão: 1)
+- Start: Índice inicial (alternativo à paginação, padrão: 0)
+- Limit: Itens por página (padrão: 10)
+- Sort: Ordenação
+- Filter: Filtro de busca
+
+## Exemplos de Uso dos Parâmetros
+
+### Paginação Básica
+GET /api/clientes?page=1&limit=20
+
+### Paginação com Índice Inicial
+GET /api/clientes?start=0&limit=10
+
+### Ordenação
+GET /api/clientes?sort=nome
+GET /api/clientes?sort=-dataCriacao
+GET /api/clientes?sort=nome,-dataCriacao
+
+### Seleção de Campos Específicos
+GET /api/clientes?fields=id,nome,email
+GET /api/clientes?fields=id,nome,email,telefone
+
+### Combinação de Parâmetros
+GET /api/clientes?page=2&limit=15&sort=nome&fields=id,nome,email
+
+## Status Atual dos Filtros
+
+IMPORTANTE: Atualmente, a implementação de filtros está como placeholder no código.
+No BaseRepository.cs, a implementação está comentada e não funcional.
+
+## Implementação Recomendada para Filtros
+
+### Opção 1: Filtro Simples por Campo
+GET /api/clientes?filter=nome:João
+GET /api/clientes?filter=email:joao@email.com
+GET /api/clientes?filter=situacao:1
+
+### Opção 2: Filtro JSON
+GET /api/clientes?filter={"nome":"João","situacao":1}
+
+### Opção 3: Filtro com Operadores
+GET /api/clientes?filter=nome:like:João
+GET /api/clientes?filter=dataCriacao:gte:2024-01-01
+GET /api/clientes?filter=valor:between:100,500
+
+## Exemplos Completos de Requisições
+
+### Listar Clientes com Paginação
+GET /api/clientes?page=1&limit=10
+
+Resposta:
+{
+  "success": true,
+  "message": null,
+  "data": [
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440000",
+      "subtitulo": "Cliente VIP",
+      "nome": "João Silva",
+      "documento": "123.456.789-00",
+      "email": "joao@email.com",
+      "telefone": "(11) 99999-9999",
+      "endereco": "Rua das Flores, 123",
+      "observacoes": "Cliente preferencial",
+      "situacao": "Ativo",
+      "dataCriacao": "2024-01-15T10:30:00Z",
+      "dataAtualizacao": null
+    }
+  ],
+  "pageNumber": 1,
+  "pageSize": 10,
+  "totalCount": 25,
+  "totalPages": 3
+}
+
+### Listar Clientes com Campos Específicos
+GET /api/clientes?fields=id,nome,email,situacao&page=1&limit=5
+
+Resposta:
+{
+  "success": true,
+  "message": null,
+  "data": [
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440000",
+      "nome": "João Silva",
+      "email": "joao@email.com",
+      "situacao": "Ativo"
+    }
+  ],
+  "pageNumber": 1,
+  "pageSize": 5,
+  "totalCount": 25,
+  "totalPages": 5
+}
+
+### Listar Reservas com Ordenação
+GET /api/reservas?sort=-data,cliente.nome&page=1&limit=10
+
+### Buscar Clientes por Nome
+GET /api/clientes?filter=nome:João&page=1&limit=10
+
+### Buscar Clientes por Múltiplos Critérios (JSON)
+GET /api/clientes?filter={"nome":"João","situacao":1}&page=1&limit=10
+
+### Busca por Texto em Múltiplos Campos
+GET /api/clientes?filter=joao&page=1&limit=10
+// Busca "joao" em nome, email, documento, telefone, observações
+
+### Ordenação Múltipla
+GET /api/clientes?sort=nome,-dataCriacao&page=1&limit=10
+// Ordena por nome (ascendente) e depois por data de criação (descendente)
+
+### Combinação Completa de Parâmetros
+GET /api/clientes?filter=nome:João&sort=-dataCriacao&fields=id,nome,email,situacao&page=1&limit=5
+
+## Autenticação com Refresh Tokens
+
+### Login
+POST /api/autenticacao/entrar
+{
+  "email": "usuario@exemplo.com",
+  "senha": "senha123"
+}
+
+Resposta:
+{
+  "success": true,
+  "message": "Login realizado com sucesso",
+  "data": {
+    "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "refreshToken": "refresh_token_gerado_automaticamente",
+    "expiraEm": "2024-01-15T12:30:00Z"
+  }
+}
+
+### Renovar Token
+POST /api/autenticacao/refresh
+{
+  "refreshToken": "refresh_token_anterior"
+}
+
+Resposta:
+{
+  "success": true,
+  "message": "Token renovado com sucesso",
+  "data": {
+    "accessToken": "novo_access_token",
+    "refreshToken": "novo_refresh_token",
+    "expiraEm": "2024-01-15T14:30:00Z"
+  }
+}
+
+## Headers Obrigatórios
+
+Todas as requisições (exceto autenticação) devem incluir:
+
+Authorization: Bearer {seu_jwt_token}
+Content-Type: application/json
+
+## Funcionalidades Implementadas
+
+### Filtros
+- ✅ Filtro simples por campo: `filter=nome:João`
+- ✅ Filtro JSON: `filter={"nome":"João","situacao":1}`
+- ✅ Busca por texto em múltiplos campos: `filter=João` (busca em nome, email, documento, etc.)
+
+### Ordenação
+- ✅ Ordenação simples: `sort=nome`
+- ✅ Ordenação descendente: `sort=-dataCriacao`
+- ✅ Múltiplas ordenações: `sort=nome,-dataCriacao`
+
+### Paginação
+- ✅ Paginação por página: `page=1&limit=10`
+- ✅ Paginação por índice: `start=0&limit=10`
+
+### Seleção de Campos
+- ✅ Campos específicos: `fields=id,nome,email`
+
+### Autenticação
+- ✅ Geração de refresh token no login
+- ✅ Renovação de tokens com refresh token
+
+## Recomendações para o Frontend
+
+1. Sempre incluir paginação para evitar carregar muitos dados
+2. Usar campos específicos quando não precisar de todos os dados
+3. Implementar cache para consultas frequentes
+4. Tratar erros de validação retornados pela API
+5. Usar ordenação para melhorar a experiência do usuário
+
+## Endpoints Disponíveis
+
+Cada entidade (Cliente, Reserva, Local, etc.) expõe os seguintes endpoints:
+
+- GET /api/{entidade} - Listar com paginação
+- GET /api/{entidade}/{id} - Obter por ID
+- POST /api/{entidade} - Criar novo
+- PUT /api/{entidade}/{id} - Atualizar
+- DELETE /api/{entidade}/{id} - Remover
+
+## Códigos de Status HTTP
+
+- 200: Sucesso
+- 201: Criado com sucesso
+- 204: Removido com sucesso
+- 400: Erro de validação
+- 401: Não autorizado
+- 404: Recurso não encontrado
+- 500: Erro interno do servidor 

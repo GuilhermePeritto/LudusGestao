@@ -37,10 +37,16 @@ public class AutenticacaoController : ControllerBase
             if (!senhaValida)
                 return Unauthorized(new ApiResponse<object>(default) { Success = false, Message = "Usuário ou senha inválidos" });
 
+            // Gerar refresh token
+            usuario.RefreshToken = _authService.GerarRefreshToken();
+            usuario.RefreshTokenExpiraEm = DateTime.UtcNow.AddDays(7);
+            await _usuarioRepository.Atualizar(usuario);
+
             var token = await _authService.GerarTokenAsync(usuario);
             var tokenDto = new TokenDTO
             {
                 AccessToken = token,
+                RefreshToken = usuario.RefreshToken,
                 ExpiraEm = DateTime.UtcNow.AddHours(2)
             };
             return Ok(new ApiResponse<TokenDTO>(tokenDto, "Login realizado com sucesso"));
