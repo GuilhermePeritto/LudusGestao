@@ -19,7 +19,5 @@ namespace LudusGestao.Domain.Entities
         public List<int> PermissoesCustomizadas { get; set; }
         public string SenhaHash { get; set; }
         public int TenantId { get; set; }
-        public string? RefreshToken { get; set; }
-        public DateTime? RefreshTokenExpiraEm { get; set; }
     }
 } 

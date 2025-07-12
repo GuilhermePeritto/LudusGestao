@@ -6,29 +6,38 @@ using LudusGestao.Domain.Entities.Base;
 using LudusGestao.Domain.Interfaces.Repositories.Base;
 using LudusGestao.Infrastructure.Data.Context;
 using LudusGestao.Domain.Common;
+using LudusGestao.Domain.Interfaces.Services;
 using System.Linq;
 using System.Text.Json;
 using System.Linq.Expressions;
+using Expression = System.Linq.Expressions.Expression;
 
 namespace LudusGestao.Infrastructure.Data.Repositories.Base
 {
     public class BaseRepository<T> : IBaseRepository<T> where T : class
     {
         protected readonly ApplicationDbContext _context;
+        protected readonly ITenantService _tenantService;
 
-        public BaseRepository(ApplicationDbContext context)
+        public BaseRepository(ApplicationDbContext context, ITenantService tenantService)
         {
             _context = context;
+            _tenantService = tenantService;
         }
 
         public virtual async Task<T> ObterPorId(Guid id)
         {
-            return await _context.Set<T>().FindAsync(id);
+            var query = _context.Set<T>().AsQueryable();
+            query = ApplyTenantFilter(query);
+            return await query.FirstOrDefaultAsync(e => EF.Property<Guid>(e, "Id") == id);
         }
 
         public virtual async Task<(IEnumerable<T> Items, int TotalCount)> ListarPaginado(QueryParamsBase queryParams)
         {
             var query = _context.Set<T>().AsQueryable();
+            
+            // Aplicar filtro de tenant automaticamente
+            query = ApplyTenantFilter(query);
 
             // Aplicar filtros
             if (!string.IsNullOrEmpty(queryParams.Filter))
@@ -253,6 +262,37 @@ namespace LudusGestao.Infrastructure.Data.Repositories.Base
                 _context.Set<T>().Remove(entity);
                 await _context.SaveChangesAsync();
             }
+        }
+
+        public virtual async Task<IEnumerable<T>> Listar()
+        {
+            var query = _context.Set<T>().AsQueryable();
+            query = ApplyTenantFilter(query);
+            return await query.ToListAsync();
+        }
+
+        protected virtual IQueryable<T> ApplyTenantFilter(IQueryable<T> query)
+        {
+            // Verificar se a entidade implementa ITenantEntity
+            if (typeof(ITenantEntity).IsAssignableFrom(typeof(T)))
+            {
+                try
+                {
+                    var tenantId = _tenantService.GetTenantId();
+                    var parameter = Expression.Parameter(typeof(T), "x");
+                    var property = Expression.Property(parameter, "TenantId");
+                    var constant = Expression.Constant(tenantId);
+                    var condition = Expression.Equal(property, constant);
+                    var lambda = Expression.Lambda<Func<T, bool>>(condition, parameter);
+                    return query.Where(lambda);
+                }
+                catch
+                {
+                    // Se não conseguir obter o tenant, retorna query vazia
+                    return query.Where(x => false);
+                }
+            }
+            return query;
         }
     }
 } 

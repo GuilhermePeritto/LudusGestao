@@ -3,7 +3,7 @@ using LudusGestao.Domain.Interfaces.Repositories.Base;
 
 namespace LudusGestao.Domain.Interfaces.Repositories
 {
-    public interface IUsuarioRepository : ITenantRepository<Usuario>
+    public interface IUsuarioRepository : IBaseRepository<Usuario>
     {
         Task<Usuario?> ObterPorEmail(string email);
         Task<Usuario?> ObterPorEmailGlobal(string email);

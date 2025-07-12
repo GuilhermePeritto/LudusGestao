@@ -242,8 +242,7 @@ namespace LudusGestao.Infrastructure.Data.Context
                     PermissoesCustomizadas = new List<int> { },
                     SenhaHash = senhaHash,
                     TenantId = 1,
-                    RefreshToken = null,
-                    RefreshTokenExpiraEm = null
+
                 };
                 Usuarios.Add(usuario);
                 base.SaveChanges();

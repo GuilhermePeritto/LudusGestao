@@ -90,6 +90,9 @@ builder.Services.AddValidatorsFromAssemblyContaining<MappingProfile>();
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddScoped<ITenantService, TenantService>();
 
+// HttpClient para APIs externas
+builder.Services.AddHttpClient();
+
 // Repositórios e Services
 builder.Services.AddScoped<IBaseRepository<Reserva>, BaseRepository<Reserva>>();
 builder.Services.AddScoped<IBaseRepository<Cliente>, BaseRepository<Cliente>>();
@@ -109,7 +112,10 @@ builder.Services.AddScoped<IRecebivelRepository, RecebivelRepository>();
 builder.Services.AddScoped<RecebivelService>();
 builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
 builder.Services.AddScoped<UsuarioService>();
-builder.Services.AddScoped<IAuthService, AuthService>();
+// Registrar AuthService da Infrastructure para a interface de domínio
+builder.Services.AddScoped<LudusGestao.Domain.Interfaces.Services.IAuthService, LudusGestao.Infrastructure.Security.AuthService>();
+// Registrar AuthService da Application para uso na controller
+builder.Services.AddScoped<LudusGestao.Application.Services.AuthService>();
 builder.Services.AddScoped<IEmpresaRepository, EmpresaRepository>();
 builder.Services.AddScoped<EmpresaService>();
 

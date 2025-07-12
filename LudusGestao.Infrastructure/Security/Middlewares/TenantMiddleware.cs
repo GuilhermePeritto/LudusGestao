@@ -26,9 +26,8 @@ namespace LudusGestao.Infrastructure.Security.Middlewares
                 return;
             }
 
-            // Ignorar rotas públicas de autenticação
-            var rotasPublicas = new[] { "/api/autenticacao/entrar", "/api/autenticacao/registrar", "/api/autenticacao/refresh" };
-            if (rotasPublicas.Any(r => path.StartsWith(r)))
+            // Ignorar rotas públicas de autenticação (ajustado para /api/auth/)
+            if (path.StartsWith("/api/auth/"))
             {
                 await _next(context);
                 return;

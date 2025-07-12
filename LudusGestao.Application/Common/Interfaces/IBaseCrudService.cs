@@ -8,6 +8,7 @@ namespace LudusGestao.Application.Common.Interfaces
     public interface IBaseCrudService<TDto, TCreateDto, TUpdateDto>
     {
         Task<ApiPagedResponse<object>> ListarPaginado(QueryParamsBase queryParams);
+        Task<IEnumerable<TDto>> Listar();
         Task<TDto> ObterPorId(Guid id);
         Task<TDto> Criar(TCreateDto dto);
         Task<TDto> Atualizar(Guid id, TUpdateDto dto);

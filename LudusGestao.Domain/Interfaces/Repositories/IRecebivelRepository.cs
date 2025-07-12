@@ -3,7 +3,7 @@ using LudusGestao.Domain.Interfaces.Repositories.Base;
 
 namespace LudusGestao.Domain.Interfaces.Repositories
 {
-    public interface IRecebivelRepository : ITenantRepository<Recebivel>
+    public interface IRecebivelRepository : IBaseRepository<Recebivel>
     {
     }
 } 

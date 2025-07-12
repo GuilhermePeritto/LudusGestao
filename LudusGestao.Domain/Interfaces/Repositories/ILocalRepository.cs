@@ -3,7 +3,7 @@ using LudusGestao.Domain.Interfaces.Repositories.Base;
 
 namespace LudusGestao.Domain.Interfaces.Repositories
 {
-    public interface ILocalRepository : ITenantRepository<Local>
+    public interface ILocalRepository : IBaseRepository<Local>
     {
     }
 } 

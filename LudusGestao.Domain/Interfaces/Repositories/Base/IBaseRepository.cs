@@ -9,6 +9,7 @@ namespace LudusGestao.Domain.Interfaces.Repositories.Base
     {
         Task<T> ObterPorId(Guid id);
         Task<(IEnumerable<T> Items, int TotalCount)> ListarPaginado(QueryParamsBase queryParams);
+        Task<IEnumerable<T>> Listar();
         Task Criar(T entity);
         Task Atualizar(T entity);
         Task Remover(Guid id);

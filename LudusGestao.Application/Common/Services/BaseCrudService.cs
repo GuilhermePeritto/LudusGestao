@@ -40,6 +40,12 @@ namespace LudusGestao.Application.Common.Services
             return new ApiPagedResponse<object>(result, queryParams.Page, queryParams.Limit, totalCount);
         }
 
+        public virtual async Task<IEnumerable<TDto>> Listar()
+        {
+            var entities = await _repository.Listar();
+            return _mapper.Map<IEnumerable<TDto>>(entities);
+        }
+
         public virtual async Task<TDto> ObterPorId(Guid id)
         {
             var entity = await _repository.ObterPorId(id);

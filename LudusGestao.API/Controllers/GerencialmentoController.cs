@@ -52,7 +52,7 @@ public class GerencialmentoController : ControllerBase
             Nome = empresaDto.Nome,
             Cnpj = empresaDto.Cnpj,
             Email = new LudusGestao.Domain.ValueObjects.Email(empresaDto.Email),
-            Endereco = new LudusGestao.Domain.ValueObjects.Endereco(empresaDto.Endereco, "", "", "", "", ""),
+            Endereco = new LudusGestao.Domain.ValueObjects.Endereco(empresaDto.Rua, empresaDto.Numero, empresaDto.Bairro, empresaDto.Cidade, empresaDto.Estado, empresaDto.CEP),
             Situacao = SituacaoBase.Ativo,
             TenantId = novoTenantId
         };
@@ -65,10 +65,10 @@ public class GerencialmentoController : ControllerBase
             Id = Guid.NewGuid(),
             Nome = $"Matriz {empresa.Nome}",
             Codigo = "001",
-            Endereco = empresaDto.Endereco,
-            Cidade = "",
-            Estado = "",
-            Cep = "",
+            Endereco = empresaDto.Rua,
+            Cidade = empresaDto.Cidade,
+            Estado = empresaDto.Estado,
+            Cep = empresaDto.CEP,
             Telefone = "",
             Email = $"matriz@{empresa.Nome.Replace(" ", "").ToLower()}.com.br",
             Cnpj = empresaDto.Cnpj,
@@ -103,8 +103,7 @@ public class GerencialmentoController : ControllerBase
             PermissoesCustomizadas = new List<int>(),
             SenhaHash = senhaHash,
             TenantId = novoTenantId,
-            RefreshToken = null,
-            RefreshTokenExpiraEm = null
+
         };
         _db.Usuarios.Add(usuario);
         await _db.SaveChangesAsync();
@@ -116,8 +115,14 @@ public class GerencialmentoController : ControllerBase
             Nome = empresa.Nome,
             Cnpj = empresa.Cnpj,
             Email = empresa.Email.Endereco,
-            Endereco = empresa.Endereco.Rua,
-            Situacao = empresa.Situacao
+            Rua = empresa.Endereco.Rua,
+            Numero = empresa.Endereco.Numero,
+            Bairro = empresa.Endereco.Bairro,
+            Cidade = empresa.Endereco.Cidade,
+            Estado = empresa.Endereco.Estado,
+            CEP = empresa.Endereco.CEP,
+            Situacao = empresa.Situacao,
+            TenantId = empresa.TenantId
         };
         var filialRetorno = new FilialDTO
         {
