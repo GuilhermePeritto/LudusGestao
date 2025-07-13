@@ -1,0 +1,557 @@
+================================================================================
+                    PLANEJAMENTO - NOVA ESTRUTURA DE PERMISSÕES
+================================================================================
+
+PROBLEMA IDENTIFICADO:
+- Usuário está vinculado a uma única filial (FilialId)
+- Deveria pertencer à empresa e ter permissões para múltiplas filiais
+- Sistema de grupos e permissões não está bem estruturado
+
+================================================================================
+                                NOVA ARQUITETURA
+================================================================================
+
+1. USUÁRIO
+   - Pertence à EMPRESA (não à filial)
+   - Tem permissões para acessar filiais específicas
+   - Pode usar grupo de permissões OU permissões individuais
+   - Hierarquia: Empresa → Usuário → Permissões → Filiais
+
+2. GRUPO DE PERMISSÕES
+   - Conjunto predefinido de permissões
+   - Reutilizável entre usuários
+   - Pode ter permissões para múltiplas filiais
+
+3. PERMISSÕES INDIVIDUAIS
+   - Permissões específicas do usuário
+   - Sobrescrevem permissões do grupo
+   - Permitem granularidade total
+
+4. PERMISSÕES POR FILIAL
+   - Usuário pode ter permissões diferentes por filial
+   - Controle granular de acesso
+
+================================================================================
+                                NOVAS ENTIDADES
+================================================================================
+
+----------------------------------------
+1. GRUPO_PERMISSAO
+----------------------------------------
+{
+  "id": "guid",
+  "nome": "string",                    // "Administrador", "Gerente", "Operador"
+  "descricao": "string",               // Descrição do grupo
+  "situacao": "Ativo|Inativo",
+  "tenantId": "int",
+  "dataCriacao": "datetime",
+  "dataAtualizacao": "datetime?"
+}
+
+----------------------------------------
+2. PERMISSAO
+----------------------------------------
+{
+  "id": "guid",
+  "nome": "string",                    // "empresa.visualizar", "filial.criar"
+  "descricao": "string",               // "Visualizar dados da empresa"
+  "moduloPai": "string",               // "configuracoes", "reservas"
+  "submodulo": "string",               // "empresa", "filial", "usuario", "cliente"
+  "acao": "string",                    // "visualizar", "criar", "editar", "excluir"
+  "situacao": "Ativo|Inativo",
+  "tenantId": "int",
+  "dataCriacao": "datetime",
+  "dataAtualizacao": "datetime?"
+}
+
+----------------------------------------
+3. GRUPO_PERMISSAO_FILIAL
+----------------------------------------
+{
+  "id": "guid",
+  "grupoPermissaoId": "guid",
+  "filialId": "guid",
+  "permissoes": ["guid"],              // IDs das permissões para esta filial
+  "tenantId": "int",
+  "dataCriacao": "datetime",
+  "dataAtualizacao": "datetime?"
+}
+
+----------------------------------------
+4. USUARIO_PERMISSAO_FILIAL
+----------------------------------------
+{
+  "id": "guid",
+  "usuarioId": "guid",
+  "filialId": "guid",
+  "permissoes": ["guid"],              // IDs das permissões para esta filial
+  "tenantId": "int",
+  "dataCriacao": "datetime",
+  "dataAtualizacao": "datetime?"
+}
+
+================================================================================
+                                ENTIDADE USUARIO MODIFICADA
+================================================================================
+
+----------------------------------------
+USUARIO (NOVA ESTRUTURA)
+----------------------------------------
+{
+  "id": "guid",
+  "nome": "string",
+  "email": "string",
+  "telefone": "string",
+  "cargo": "string",
+  "empresaId": "guid",                 // MUDANÇA: agora pertence à empresa
+  "grupoPermissaoId": "guid?",         // OPCIONAL: pode usar grupo
+  "situacao": "Ativo|Inativo",
+  "ultimoAcesso": "datetime",
+  "foto": "string?",
+  "senhaHash": "string",
+  "tenantId": "int",
+  "dataCriacao": "datetime",
+  "dataAtualizacao": "datetime?"
+}
+
+REMOVIDO:
+- FilialId (agora usuário pertence à empresa)
+- PermissoesCustomizadas (substituído por sistema de permissões)
+
+================================================================================
+                                ESTRUTURA HIERÁRQUICA DE PERMISSÕES
+================================================================================
+
+----------------------------------------
+MÓDULO PAI: CONFIGURAÇÕES
+----------------------------------------
+configuracoes.acesso    - Acesso ao módulo de configurações
+
+SUBMÓDULOS:
+├── EMPRESA
+│   ├── empresa.visualizar     - Visualizar dados da empresa
+│   ├── empresa.editar         - Editar dados da empresa
+│   └── empresa.excluir        - Excluir empresa
+│
+├── FILIAL
+│   ├── filial.visualizar      - Visualizar filiais
+│   ├── filial.criar           - Criar nova filial
+│   ├── filial.editar          - Editar filial
+│   └── filial.excluir         - Excluir filial
+│
+├── USUARIO
+│   ├── usuario.visualizar     - Visualizar usuários
+│   ├── usuario.criar          - Criar usuário
+│   ├── usuario.editar         - Editar usuário
+│   ├── usuario.excluir        - Excluir usuário
+│   └── usuario.permissoes     - Gerenciar permissões
+│
+└── GRUPO_PERMISSAO
+    ├── grupo.visualizar       - Visualizar grupos de permissões
+    ├── grupo.criar            - Criar grupo de permissões
+    ├── grupo.editar           - Editar grupo de permissões
+    ├── grupo.excluir          - Excluir grupo de permissões
+    ├── grupo.permissoes       - Gerenciar permissões do grupo
+    └── grupo.usuarios         - Gerenciar usuários do grupo
+
+----------------------------------------
+MÓDULO PAI: RESERVAS
+----------------------------------------
+reservas.acesso         - Acesso ao módulo de reservas
+
+SUBMÓDULOS:
+├── CLIENTE
+│   ├── cliente.visualizar     - Visualizar clientes
+│   ├── cliente.criar          - Criar cliente
+│   ├── cliente.editar         - Editar cliente
+│   └── cliente.excluir        - Excluir cliente
+│
+├── LOCAL
+│   ├── local.visualizar       - Visualizar locais
+│   ├── local.criar            - Criar local
+│   ├── local.editar           - Editar local
+│   └── local.excluir          - Excluir local
+│
+├── RESERVA
+│   ├── reserva.visualizar     - Visualizar reservas
+│   ├── reserva.criar          - Criar reserva
+│   ├── reserva.editar         - Editar reserva
+│   ├── reserva.cancelar       - Cancelar reserva
+│   └── reserva.confirmar      - Confirmar reserva
+│
+├── RECEBIVEL
+│   ├── recebivel.visualizar   - Visualizar recebíveis
+│   ├── recebivel.criar        - Criar recebível
+│   ├── recebivel.editar       - Editar recebível
+│   ├── recebivel.excluir      - Excluir recebível
+│   └── recebivel.marcar_pago  - Marcar como pago
+│
+└── RELATORIO
+    ├── relatorio.visualizar   - Visualizar relatórios
+    └── relatorio.exportar     - Exportar relatórios
+
+================================================================================
+                                REGRAS DE ACESSO HIERÁRQUICO
+================================================================================
+
+1. ACESSO AO MÓDULO PAI
+   - Usuário PRECISA ter permissão do módulo pai para acessar submódulos
+   - Ex: Para acessar empresa.visualizar, precisa ter configuracoes.acesso
+   - Ex: Para acessar cliente.criar, precisa ter reservas.acesso
+
+2. PERMISSÕES EM CASCATA
+   - Se usuário tem configuracoes.acesso, pode ver o menu de configurações
+   - Se usuário tem reservas.acesso, pode ver o menu de reservas
+   - Permissões específicas controlam ações dentro dos submódulos
+
+3. VERIFICAÇÃO EM DUAS ETAPAS
+   - Primeiro: Verifica se tem acesso ao módulo pai
+   - Segundo: Verifica se tem permissão específica do submódulo
+
+4. EXEMPLOS DE VERIFICAÇÃO
+   - Para criar usuário: configuracoes.acesso + usuario.criar
+   - Para visualizar reservas: reservas.acesso + reserva.visualizar
+   - Para editar cliente: reservas.acesso + cliente.editar
+   - Para gerenciar grupos: configuracoes.acesso + grupo.visualizar
+   - Para adicionar usuário ao grupo: configuracoes.acesso + grupo.usuarios
+
+================================================================================
+                                EXEMPLOS PRÁTICOS DE USO
+================================================================================
+
+----------------------------------------
+CENÁRIO 1: ADMINISTRADOR
+----------------------------------------
+Permissões:
+- configuracoes.acesso ✅
+- reservas.acesso ✅
+- Todas as permissões de submódulos
+
+Acesso:
+- Menu "Configurações" visível
+- Menu "Reservas" visível
+- Todas as funcionalidades disponíveis
+- Pode gerenciar grupos de permissões
+- Pode adicionar/remover usuários de grupos
+
+----------------------------------------
+CENÁRIO 2: GERENTE DE FILIAL
+----------------------------------------
+Permissões:
+- reservas.acesso ✅
+- cliente.visualizar ✅
+- cliente.editar ✅
+- reserva.visualizar ✅
+- reserva.criar ✅
+- reserva.editar ✅
+- local.visualizar ✅
+- relatorio.visualizar ✅
+
+Acesso:
+- Menu "Configurações" NÃO visível
+- Menu "Reservas" visível
+- Pode gerenciar clientes, reservas, locais
+- Pode visualizar relatórios
+- NÃO pode gerenciar usuários ou configurações da empresa
+
+----------------------------------------
+CENÁRIO 3: ATENDENTE
+----------------------------------------
+Permissões:
+- reservas.acesso ✅
+- reserva.visualizar ✅
+- reserva.criar ✅
+- cliente.visualizar ✅
+
+Acesso:
+- Menu "Configurações" NÃO visível
+- Menu "Reservas" visível
+- Pode visualizar e criar reservas
+- Pode visualizar clientes
+- NÃO pode editar clientes ou locais
+- NÃO pode acessar relatórios
+
+----------------------------------------
+CENÁRIO 4: USUÁRIO SEM MÓDULO PAI
+----------------------------------------
+Permissões:
+- usuario.criar ✅ (mas SEM configuracoes.acesso)
+
+Acesso:
+- Menu "Configurações" NÃO visível
+- Mesmo tendo permissão específica, não pode acessar
+- Sistema nega acesso por falta do módulo pai
+
+----------------------------------------
+CENÁRIO 5: GERENTE DE USUÁRIOS
+----------------------------------------
+Permissões:
+- configuracoes.acesso ✅
+- usuario.visualizar ✅
+- usuario.criar ✅
+- usuario.editar ✅
+- grupo.visualizar ✅
+- grupo.usuarios ✅
+
+Acesso:
+- Menu "Configurações" visível
+- Pode gerenciar usuários
+- Pode visualizar grupos
+- Pode adicionar/remover usuários de grupos
+- NÃO pode gerenciar permissões dos grupos
+- NÃO pode gerenciar empresa/filiais
+
+================================================================================
+                                GRUPOS PADRÃO
+================================================================================
+
+----------------------------------------
+1. ADMINISTRADOR
+----------------------------------------
+- Todas as permissões para todas as filiais
+- Acesso total aos módulos: configuracoes.acesso + reservas.acesso
+- Pode gerenciar usuários e permissões
+- Acesso total ao sistema
+
+----------------------------------------
+2. GERENTE
+----------------------------------------
+- Acesso ao módulo de reservas: reservas.acesso
+- Permissões de gestão para filiais específicas
+- Pode gerenciar reservas, clientes, locais
+- NÃO tem acesso a configurações (usuários, empresa, filiais)
+- Pode visualizar relatórios
+
+----------------------------------------
+3. OPERADOR
+----------------------------------------
+- Acesso ao módulo de reservas: reservas.acesso
+- Permissões básicas de operação
+- Pode criar/editar reservas
+- Pode visualizar clientes e locais
+- Acesso limitado a relatórios
+- NÃO tem acesso a configurações
+
+----------------------------------------
+4. ATENDENTE
+----------------------------------------
+- Acesso limitado ao módulo de reservas: reservas.acesso
+- Permissões mínimas
+- Pode visualizar reservas
+- Pode criar reservas simples
+- Acesso apenas a dados básicos
+- NÃO tem acesso a configurações
+
+================================================================================
+                                FLUXO DE VERIFICAÇÃO
+================================================================================
+
+1. USUÁRIO FAZ LOGIN
+   - Sistema identifica empresa e tenant
+   - Carrega permissões do usuário
+
+2. VERIFICAÇÃO DE MÓDULO PAI
+   - Verifica se usuário tem acesso ao módulo pai
+   - Ex: configuracoes.acesso, reservas.acesso
+   - Se não tiver, nega acesso ao submódulo
+
+3. VERIFICAÇÃO DE PERMISSÃO
+   - Verifica se usuário tem grupo de permissões
+   - Se sim, usa permissões do grupo
+   - Se não, usa permissões individuais
+   - Permissões individuais sobrescrevem grupo
+
+4. VERIFICAÇÃO POR FILIAL
+   - Verifica se usuário tem permissão para a filial específica
+   - Se não tiver, nega acesso
+
+5. VERIFICAÇÃO DE AÇÃO
+   - Verifica se usuário tem permissão para a ação específica
+   - Ex: usuario.criar, filial.editar
+
+================================================================================
+                                NOVAS ROTAS DA API
+================================================================================
+
+----------------------------------------
+GRUPOS DE PERMISSÕES
+----------------------------------------
+GET    /api/grupos-permissoes           - Listar grupos
+GET    /api/grupos-permissoes/{id}      - Obter grupo
+POST   /api/grupos-permissoes           - Criar grupo
+PUT    /api/grupos-permissoes/{id}      - Atualizar grupo
+DELETE /api/grupos-permissoes/{id}      - Remover grupo
+
+----------------------------------------
+PERMISSÕES
+----------------------------------------
+GET    /api/permissoes                  - Listar permissões
+GET    /api/permissoes/{id}             - Obter permissão
+GET    /api/permissoes/modulos-pai      - Listar módulos pai disponíveis
+GET    /api/permissoes/submodulos       - Listar submódulos disponíveis
+GET    /api/permissoes/acoes            - Listar ações disponíveis
+
+----------------------------------------
+PERMISSÕES DE USUÁRIO
+----------------------------------------
+GET    /api/usuarios/{id}/permissoes    - Obter permissões do usuário
+POST   /api/usuarios/{id}/permissoes    - Definir permissões do usuário
+GET    /api/usuarios/{id}/filiais       - Obter filiais que usuário tem acesso
+
+----------------------------------------
+PERMISSÕES DE GRUPO
+----------------------------------------
+GET    /api/grupos-permissoes/{id}/permissoes    - Obter permissões do grupo
+POST   /api/grupos-permissoes/{id}/permissoes   - Definir permissões do grupo
+GET    /api/grupos-permissoes/{id}/usuarios     - Obter usuários do grupo
+POST   /api/grupos-permissoes/{id}/usuarios     - Adicionar usuário ao grupo
+DELETE /api/grupos-permissoes/{id}/usuarios/{usuarioId} - Remover usuário do grupo
+
+================================================================================
+                                MIGRAÇÃO DE DADOS
+================================================================================
+
+1. CRIAR NOVAS TABELAS
+   - GrupoPermissao
+   - Permissao
+   - GrupoPermissaoFilial
+   - UsuarioPermissaoFilial
+
+2. MIGRAR USUÁRIOS EXISTENTES
+   - Remover FilialId
+   - Adicionar EmpresaId
+   - Criar permissões baseadas no GrupoId atual
+
+3. CRIAR PERMISSÕES PADRÃO
+   - Inserir permissões de módulos pai (configuracoes.acesso, reservas.acesso)
+   - Inserir todas as permissões de submódulos
+   - Criar grupos padrão (Admin, Gerente, Operador, Atendente)
+
+4. MIGRAR PERMISSÕES EXISTENTES
+   - Converter PermissoesCustomizadas para novo sistema
+   - Atribuir usuários aos grupos apropriados
+
+================================================================================
+                                IMPLEMENTAÇÃO TÉCNICA
+================================================================================
+
+1. NOVAS ENTIDADES (Domain)
+   - Criar classes de entidade
+   - Definir relacionamentos
+   - Implementar validações
+
+2. REPOSITÓRIOS (Infrastructure)
+   - Implementar repositórios para novas entidades
+   - Criar queries para verificação de permissões
+
+3. SERVIÇOS (Application)
+   - Serviço de verificação de permissões
+   - Serviço de gerenciamento de grupos
+   - Serviço de atribuição de permissões
+
+4. CONTROLLERS (API)
+   - Controllers para grupos e permissões
+   - Middleware de verificação de permissões
+   - Endpoints para gerenciamento
+
+5. MIGRATIONS (Infrastructure)
+   - Criar migrations para novas tabelas
+   - Migration para modificar tabela Usuario
+   - Seed de dados padrão
+
+================================================================================
+                                MIDDLEWARE DE PERMISSÕES
+================================================================================
+
+1. PERMISSION MIDDLEWARE
+   - Verifica permissões antes de executar ações
+   - Valida acesso à filial específica
+   - Registra tentativas de acesso negado
+
+2. MODULE ACCESS MIDDLEWARE
+   - Verifica se usuário tem acesso ao módulo pai
+   - Controla visibilidade de menus e funcionalidades
+   - Aplica filtros automáticos por módulo
+
+3. FILIAL ACCESS MIDDLEWARE
+   - Verifica se usuário tem acesso à filial
+   - Filtra dados por filiais permitidas
+   - Aplica filtros automáticos
+
+================================================================================
+                                BENEFÍCIOS DA NOVA ESTRUTURA
+================================================================================
+
+1. FLEXIBILIDADE
+   - Usuário pode acessar múltiplas filiais
+   - Permissões granulares por filial
+   - Combinação de grupos e permissões individuais
+
+2. ESCALABILIDADE
+   - Fácil adição de novas permissões
+   - Grupos reutilizáveis
+   - Sistema preparado para crescimento
+
+3. SEGURANÇA
+   - Controle granular de acesso
+   - Auditoria de permissões
+   - Separação clara de responsabilidades
+
+4. USABILIDADE
+   - Interface intuitiva para gerenciar permissões
+   - Grupos pré-definidos para facilitar configuração
+   - Feedback claro sobre permissões
+
+================================================================================
+                                PRÓXIMOS PASSOS
+================================================================================
+
+1. APROVAÇÃO DO PLANO
+   - Revisar e aprovar esta estrutura
+   - Definir prioridades de implementação
+
+2. IMPLEMENTAÇÃO FASE 1
+   - Criar novas entidades
+   - Implementar repositórios básicos
+   - Criar migrations
+
+3. IMPLEMENTAÇÃO FASE 2
+   - Implementar serviços de permissões
+   - Criar middleware de verificação
+   - Implementar controllers
+
+4. IMPLEMENTAÇÃO FASE 3
+   - Migração de dados existentes
+   - Testes de integração
+   - Documentação atualizada
+
+5. IMPLEMENTAÇÃO FASE 4
+   - Interface de gerenciamento
+   - Testes de usuário
+   - Deploy em produção
+
+================================================================================
+                                CONSIDERAÇÕES IMPORTANTES
+================================================================================
+
+1. COMPATIBILIDADE
+   - Manter compatibilidade com sistema atual
+   - Migração gradual de dados
+   - Rollback em caso de problemas
+
+2. PERFORMANCE
+   - Cache de permissões
+   - Queries otimizadas
+   - Índices adequados no banco
+
+3. SEGURANÇA
+   - Validação rigorosa de permissões
+   - Logs de auditoria
+   - Prevenção de elevação de privilégios
+
+4. USABILIDADE
+   - Interface intuitiva
+   - Feedback claro para usuários
+   - Documentação completa
+
+================================================================================ 

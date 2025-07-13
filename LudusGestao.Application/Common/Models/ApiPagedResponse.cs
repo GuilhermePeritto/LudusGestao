@@ -4,21 +4,21 @@ namespace LudusGestao.Application.Common.Models
     {
         public bool Success { get; set; }
         public string Message { get; set; }
-        public T Data { get; set; }
-        public int PageNumber { get; set; }
+        public IEnumerable<T> Items { get; set; }
+        public int TotalItems { get; set; }
+        public int CurrentPage { get; set; }
         public int PageSize { get; set; }
-        public int TotalCount { get; set; }
         public int TotalPages { get; set; }
 
-        public ApiPagedResponse(T data, int pageNumber, int pageSize, int totalCount, string message = null)
+        public ApiPagedResponse(IEnumerable<T> items, int currentPage, int pageSize, int totalItems, string message = null)
         {
             Success = true;
             Message = message;
-            Data = data;
-            PageNumber = pageNumber;
+            Items = items;
+            CurrentPage = currentPage;
             PageSize = pageSize;
-            TotalCount = totalCount;
-            TotalPages = (int)System.Math.Ceiling(totalCount / (double)pageSize);
+            TotalItems = totalItems;
+            TotalPages = (int)System.Math.Ceiling(totalItems / (double)pageSize);
         }
     }
 } 

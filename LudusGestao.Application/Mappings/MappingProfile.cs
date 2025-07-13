@@ -52,19 +52,25 @@ namespace LudusGestao.Application.Mappings
 
             // Empresa
             CreateMap<CreateEmpresaDTO, Empresa>()
-                .ForMember(dest => dest.Email, opt => opt.MapFrom(src => new LudusGestao.Domain.ValueObjects.Email(src.Email)))
-                .ForMember(dest => dest.Endereco, opt => opt.MapFrom(src => new LudusGestao.Domain.ValueObjects.Endereco(src.Rua, src.Numero, src.Bairro, src.Cidade, src.Estado, src.CEP)));
+                .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
+                .ForMember(dest => dest.Endereco, opt => opt.MapFrom(src => $"{src.Rua}, {src.Numero}"))
+                .ForMember(dest => dest.Cidade, opt => opt.MapFrom(src => src.Cidade))
+                .ForMember(dest => dest.Estado, opt => opt.MapFrom(src => src.Estado))
+                .ForMember(dest => dest.Cep, opt => opt.MapFrom(src => src.CEP));
             CreateMap<UpdateEmpresaDTO, Empresa>()
-                .ForMember(dest => dest.Email, opt => opt.MapFrom(src => new LudusGestao.Domain.ValueObjects.Email(src.Email)))
-                .ForMember(dest => dest.Endereco, opt => opt.MapFrom(src => new LudusGestao.Domain.ValueObjects.Endereco(src.Rua, src.Numero, src.Bairro, src.Cidade, src.Estado, src.CEP)));
+                .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
+                .ForMember(dest => dest.Endereco, opt => opt.MapFrom(src => $"{src.Rua}, {src.Numero}"))
+                .ForMember(dest => dest.Cidade, opt => opt.MapFrom(src => src.Cidade))
+                .ForMember(dest => dest.Estado, opt => opt.MapFrom(src => src.Estado))
+                .ForMember(dest => dest.Cep, opt => opt.MapFrom(src => src.CEP));
             CreateMap<Empresa, EmpresaDTO>()
-                .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email.Endereco))
-                .ForMember(dest => dest.Rua, opt => opt.MapFrom(src => src.Endereco.Rua))
-                .ForMember(dest => dest.Numero, opt => opt.MapFrom(src => src.Endereco.Numero))
-                .ForMember(dest => dest.Bairro, opt => opt.MapFrom(src => src.Endereco.Bairro))
-                .ForMember(dest => dest.Cidade, opt => opt.MapFrom(src => src.Endereco.Cidade))
-                .ForMember(dest => dest.Estado, opt => opt.MapFrom(src => src.Endereco.Estado))
-                .ForMember(dest => dest.CEP, opt => opt.MapFrom(src => src.Endereco.CEP));
+                .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
+                .ForMember(dest => dest.Rua, opt => opt.MapFrom(src => src.Endereco))
+                .ForMember(dest => dest.Numero, opt => opt.MapFrom(src => ""))
+                .ForMember(dest => dest.Bairro, opt => opt.MapFrom(src => ""))
+                .ForMember(dest => dest.Cidade, opt => opt.MapFrom(src => src.Cidade))
+                .ForMember(dest => dest.Estado, opt => opt.MapFrom(src => src.Estado))
+                .ForMember(dest => dest.CEP, opt => opt.MapFrom(src => src.Cep));
         }
     }
 } 

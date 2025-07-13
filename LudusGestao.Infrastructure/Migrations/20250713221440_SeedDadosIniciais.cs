@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace LudusGestao.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class SeedDadosIniciais : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -16,7 +16,6 @@ namespace LudusGestao.Infrastructure.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Subtitulo = table.Column<string>(type: "text", nullable: false),
                     Nome = table.Column<string>(type: "text", nullable: false),
                     Documento = table.Column<string>(type: "text", nullable: false),
                     Email = table.Column<string>(type: "text", nullable: false),
@@ -40,13 +39,12 @@ namespace LudusGestao.Infrastructure.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Nome = table.Column<string>(type: "text", nullable: false),
                     Cnpj = table.Column<string>(type: "text", nullable: false),
-                    Email_Endereco = table.Column<string>(type: "text", nullable: false),
-                    Endereco_Rua = table.Column<string>(type: "text", nullable: false),
-                    Endereco_Numero = table.Column<string>(type: "text", nullable: false),
-                    Endereco_Bairro = table.Column<string>(type: "text", nullable: false),
-                    Endereco_Cidade = table.Column<string>(type: "text", nullable: false),
-                    Endereco_Estado = table.Column<string>(type: "text", nullable: false),
-                    Endereco_CEP = table.Column<string>(type: "text", nullable: false),
+                    Email = table.Column<string>(type: "text", nullable: false),
+                    Endereco = table.Column<string>(type: "text", nullable: false),
+                    Cidade = table.Column<string>(type: "text", nullable: false),
+                    Estado = table.Column<string>(type: "text", nullable: false),
+                    Cep = table.Column<string>(type: "text", nullable: false),
+                    Telefone = table.Column<string>(type: "text", nullable: false),
                     TenantId = table.Column<int>(type: "integer", nullable: false),
                     Situacao = table.Column<int>(type: "integer", nullable: false),
                     DataCriacao = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
@@ -58,30 +56,40 @@ namespace LudusGestao.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Usuarios",
+                name: "GruposPermissoes",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Nome = table.Column<string>(type: "text", nullable: false),
-                    Email = table.Column<string>(type: "text", nullable: false),
-                    Telefone = table.Column<string>(type: "text", nullable: false),
-                    Cargo = table.Column<string>(type: "text", nullable: false),
-                    FilialId = table.Column<Guid>(type: "uuid", nullable: false),
-                    GrupoId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Descricao = table.Column<string>(type: "text", nullable: false),
                     Situacao = table.Column<int>(type: "integer", nullable: false),
-                    UltimoAcesso = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    Foto = table.Column<string>(type: "text", nullable: true),
-                    PermissoesCustomizadas = table.Column<string>(type: "text", nullable: false),
-                    SenhaHash = table.Column<string>(type: "text", nullable: false),
                     TenantId = table.Column<int>(type: "integer", nullable: false),
-                    RefreshToken = table.Column<string>(type: "text", nullable: true),
-                    RefreshTokenExpiraEm = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     DataCriacao = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     DataAtualizacao = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Usuarios", x => x.Id);
+                    table.PrimaryKey("PK_GruposPermissoes", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Permissoes",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Nome = table.Column<string>(type: "text", nullable: false),
+                    Descricao = table.Column<string>(type: "text", nullable: false),
+                    ModuloPai = table.Column<string>(type: "text", nullable: false),
+                    Submodulo = table.Column<string>(type: "text", nullable: false),
+                    Acao = table.Column<string>(type: "text", nullable: false),
+                    Situacao = table.Column<int>(type: "integer", nullable: false),
+                    TenantId = table.Column<int>(type: "integer", nullable: false),
+                    DataCriacao = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    DataAtualizacao = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Permissoes", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -118,11 +126,74 @@ namespace LudusGestao.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Usuarios",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Nome = table.Column<string>(type: "text", nullable: false),
+                    Email = table.Column<string>(type: "text", nullable: false),
+                    Telefone = table.Column<string>(type: "text", nullable: false),
+                    Cargo = table.Column<string>(type: "text", nullable: false),
+                    EmpresaId = table.Column<Guid>(type: "uuid", nullable: false),
+                    GrupoPermissaoId = table.Column<Guid>(type: "uuid", nullable: true),
+                    Situacao = table.Column<int>(type: "integer", nullable: false),
+                    UltimoAcesso = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    Foto = table.Column<string>(type: "text", nullable: true),
+                    SenhaHash = table.Column<string>(type: "text", nullable: false),
+                    TenantId = table.Column<int>(type: "integer", nullable: false),
+                    DataCriacao = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    DataAtualizacao = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Usuarios", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Usuarios_Empresas_EmpresaId",
+                        column: x => x.EmpresaId,
+                        principalTable: "Empresas",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Usuarios_GruposPermissoes_GrupoPermissaoId",
+                        column: x => x.GrupoPermissaoId,
+                        principalTable: "GruposPermissoes",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "GruposPermissoesFiliais",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    GrupoPermissaoId = table.Column<Guid>(type: "uuid", nullable: false),
+                    FilialId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Permissoes = table.Column<string>(type: "text", nullable: false),
+                    TenantId = table.Column<int>(type: "integer", nullable: false),
+                    DataCriacao = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    DataAtualizacao = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_GruposPermissoesFiliais", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_GruposPermissoesFiliais_Filiais_FilialId",
+                        column: x => x.FilialId,
+                        principalTable: "Filiais",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_GruposPermissoesFiliais_GruposPermissoes_GrupoPermissaoId",
+                        column: x => x.GrupoPermissaoId,
+                        principalTable: "GruposPermissoes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Locais",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Subtitulo = table.Column<string>(type: "text", nullable: false),
                     Nome = table.Column<string>(type: "text", nullable: false),
                     Tipo = table.Column<string>(type: "text", nullable: false),
                     Intervalo = table.Column<int>(type: "integer", nullable: false),
@@ -146,6 +217,35 @@ namespace LudusGestao.Infrastructure.Migrations
                         name: "FK_Locais_Filiais_FilialId",
                         column: x => x.FilialId,
                         principalTable: "Filiais",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UsuariosPermissoesFiliais",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    UsuarioId = table.Column<Guid>(type: "uuid", nullable: false),
+                    FilialId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Permissoes = table.Column<string>(type: "text", nullable: false),
+                    TenantId = table.Column<int>(type: "integer", nullable: false),
+                    DataCriacao = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    DataAtualizacao = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UsuariosPermissoesFiliais", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_UsuariosPermissoesFiliais_Filiais_FilialId",
+                        column: x => x.FilialId,
+                        principalTable: "Filiais",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_UsuariosPermissoesFiliais_Usuarios_UsuarioId",
+                        column: x => x.UsuarioId,
+                        principalTable: "Usuarios",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -229,6 +329,16 @@ namespace LudusGestao.Infrastructure.Migrations
                 column: "EmpresaId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_GruposPermissoesFiliais_FilialId",
+                table: "GruposPermissoesFiliais",
+                column: "FilialId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_GruposPermissoesFiliais_GrupoPermissaoId",
+                table: "GruposPermissoesFiliais",
+                column: "GrupoPermissaoId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Locais_FilialId",
                 table: "Locais",
                 column: "FilialId");
@@ -257,13 +367,42 @@ namespace LudusGestao.Infrastructure.Migrations
                 name: "IX_Reservas_UsuarioId",
                 table: "Reservas",
                 column: "UsuarioId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Usuarios_EmpresaId",
+                table: "Usuarios",
+                column: "EmpresaId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Usuarios_GrupoPermissaoId",
+                table: "Usuarios",
+                column: "GrupoPermissaoId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UsuariosPermissoesFiliais_FilialId",
+                table: "UsuariosPermissoesFiliais",
+                column: "FilialId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UsuariosPermissoesFiliais_UsuarioId",
+                table: "UsuariosPermissoesFiliais",
+                column: "UsuarioId");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "GruposPermissoesFiliais");
+
+            migrationBuilder.DropTable(
+                name: "Permissoes");
+
+            migrationBuilder.DropTable(
                 name: "Recebiveis");
+
+            migrationBuilder.DropTable(
+                name: "UsuariosPermissoesFiliais");
 
             migrationBuilder.DropTable(
                 name: "Reservas");
@@ -279,6 +418,9 @@ namespace LudusGestao.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "Filiais");
+
+            migrationBuilder.DropTable(
+                name: "GruposPermissoes");
 
             migrationBuilder.DropTable(
                 name: "Empresas");

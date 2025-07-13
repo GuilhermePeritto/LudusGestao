@@ -7,7 +7,6 @@ namespace LudusGestao.Domain.Entities
 {
     public class Local : BaseEntity, ITenantEntity
     {
-        public string Subtitulo { get; set; }
         public string Nome { get; set; }
         public string Tipo { get; set; }
         public int Intervalo { get; set; }

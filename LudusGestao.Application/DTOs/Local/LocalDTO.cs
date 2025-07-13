@@ -12,7 +12,6 @@ public class LocalDTO
     public DateTime DataCriacao { get; set; }
     public DateTime? DataAtualizacao { get; set; }
     
-    public string Subtitulo { get; set; }
     public string Nome { get; set; }
     public string Tipo { get; set; }
     public int Intervalo { get; set; }

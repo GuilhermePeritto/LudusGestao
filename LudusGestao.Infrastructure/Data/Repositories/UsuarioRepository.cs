@@ -25,4 +25,18 @@ public class UsuarioRepository : BaseRepository<Usuario>, IUsuarioRepository
             .IgnoreQueryFilters()
             .FirstOrDefaultAsync(u => u.Email == email);
     }
+
+    public async Task<IEnumerable<Usuario>> ObterPorEmpresa(Guid empresaId)
+    {
+        var query = _context.Set<Usuario>().AsQueryable();
+        query = ApplyTenantFilter(query);
+        return await query.Where(u => u.EmpresaId == empresaId).ToListAsync();
+    }
+
+    public async Task<IEnumerable<Usuario>> ObterPorGrupo(Guid grupoId)
+    {
+        var query = _context.Set<Usuario>().AsQueryable();
+        query = ApplyTenantFilter(query);
+        return await query.Where(u => u.GrupoPermissaoId == grupoId).ToListAsync();
+    }
 } 

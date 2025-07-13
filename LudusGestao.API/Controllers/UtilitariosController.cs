@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using LudusGestao.Application.DTOs.Utilitarios;
 using LudusGestao.Application.Common.Models;
+using LudusGestao.Domain.Interfaces.Services;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Text.Json;
@@ -10,14 +11,15 @@ namespace LudusGestao.API.Controllers;
 
 [ApiController]
 [Route("api/utilitarios")]
-[Authorize]
 public class UtilitariosController : ControllerBase
 {
     private readonly IHttpClientFactory _httpClientFactory;
+    private readonly ISeedService _seedService;
 
-    public UtilitariosController(IHttpClientFactory httpClientFactory)
+    public UtilitariosController(IHttpClientFactory httpClientFactory, ISeedService seedService)
     {
         _httpClientFactory = httpClientFactory;
+        _seedService = seedService;
     }
 
     [HttpGet("cep/{cep}")]
@@ -59,6 +61,28 @@ public class UtilitariosController : ControllerBase
         catch (Exception ex)
         {
             return StatusCode(500, new ApiResponse<object>(default) { Success = false, Message = "Erro ao buscar endereço" });
+        }
+    }
+
+    [HttpPost("seed")]
+    public async Task<IActionResult> ExecutarSeed()
+    {
+        try
+        {
+            var resultado = await _seedService.SeedDadosBaseAsync();
+            
+            if (resultado)
+            {
+                return Ok(new { message = "Dados base inseridos com sucesso!" });
+            }
+            else
+            {
+                return BadRequest(new { message = "Dados já existem ou erro ao inserir dados base." });
+            }
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { message = $"Erro ao executar seed: {ex.Message}" });
         }
     }
 }

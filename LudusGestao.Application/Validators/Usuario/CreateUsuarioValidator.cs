@@ -10,7 +10,7 @@ namespace LudusGestao.Application.Validators.Usuario
             RuleFor(x => x.Nome).NotEmpty().WithMessage("O nome do usuário é obrigatório.");
             RuleFor(x => x.Email).EmailAddress().WithMessage("E-mail inválido.");
             RuleFor(x => x.Senha).NotEmpty().WithMessage("A senha é obrigatória.");
-            RuleFor(x => x.FilialId).NotEmpty().WithMessage("A filial é obrigatória.");
+            RuleFor(x => x.EmpresaId).NotEmpty().WithMessage("A empresa é obrigatória.");
         }
     }
 } 

@@ -30,8 +30,8 @@ public class ClientesController : BaseCrudController<ClienteService, ClienteDTO,
             var resumo = new ClienteResumoDTO
             {
                 TotalClientes = clientes.Count(),
-                Ativos = clientes.Count(c => c.Situacao == SituacaoCliente.Ativo),
-                Inativos = clientes.Count(c => c.Situacao == SituacaoCliente.Inativo),
+                Ativos = clientes.Count(c => c.Situacao == SituacaoCliente.Ativo.ToString()),
+                Inativos = clientes.Count(c => c.Situacao == SituacaoCliente.Inativo.ToString()),
                 NovosMes = clientes.Count(c => 
                     c.DataCriacao.Year == dataAtual.Year && 
                     c.DataCriacao.Month == dataAtual.Month),

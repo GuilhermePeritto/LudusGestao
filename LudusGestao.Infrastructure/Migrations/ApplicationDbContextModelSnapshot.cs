@@ -56,10 +56,6 @@ namespace LudusGestao.Infrastructure.Migrations
                     b.Property<int>("Situacao")
                         .HasColumnType("integer");
 
-                    b.Property<string>("Subtitulo")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<string>("Telefone")
                         .IsRequired()
                         .HasColumnType("text");
@@ -78,6 +74,14 @@ namespace LudusGestao.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<string>("Cep")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Cidade")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("Cnpj")
                         .IsRequired()
                         .HasColumnType("text");
@@ -88,12 +92,28 @@ namespace LudusGestao.Infrastructure.Migrations
                     b.Property<DateTime>("DataCriacao")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Endereco")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Estado")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("Nome")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<int>("Situacao")
                         .HasColumnType("integer");
+
+                    b.Property<string>("Telefone")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<int>("TenantId")
                         .HasColumnType("integer");
@@ -174,6 +194,71 @@ namespace LudusGestao.Infrastructure.Migrations
                     b.ToTable("Filiais");
                 });
 
+            modelBuilder.Entity("LudusGestao.Domain.Entities.GrupoPermissao", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("DataAtualizacao")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("DataCriacao")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Descricao")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Nome")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("Situacao")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("TenantId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("GruposPermissoes");
+                });
+
+            modelBuilder.Entity("LudusGestao.Domain.Entities.GrupoPermissaoFilial", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("DataAtualizacao")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("DataCriacao")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("FilialId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("GrupoPermissaoId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Permissoes")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("TenantId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FilialId");
+
+                    b.HasIndex("GrupoPermissaoId");
+
+                    b.ToTable("GruposPermissoesFiliais");
+                });
+
             modelBuilder.Entity("LudusGestao.Domain.Entities.Local", b =>
                 {
                     b.Property<Guid>("Id")
@@ -221,10 +306,6 @@ namespace LudusGestao.Infrastructure.Migrations
                     b.Property<int>("Situacao")
                         .HasColumnType("integer");
 
-                    b.Property<string>("Subtitulo")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<int>("TenantId")
                         .HasColumnType("integer");
 
@@ -240,6 +321,49 @@ namespace LudusGestao.Infrastructure.Migrations
                     b.HasIndex("FilialId");
 
                     b.ToTable("Locais");
+                });
+
+            modelBuilder.Entity("LudusGestao.Domain.Entities.Permissao", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Acao")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("DataAtualizacao")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("DataCriacao")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Descricao")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("ModuloPai")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Nome")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("Situacao")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Submodulo")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("TenantId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Permissoes");
                 });
 
             modelBuilder.Entity("LudusGestao.Domain.Entities.Recebivel", b =>
@@ -368,20 +492,16 @@ namespace LudusGestao.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid>("FilialId")
+                    b.Property<Guid>("EmpresaId")
                         .HasColumnType("uuid");
 
                     b.Property<string>("Foto")
                         .HasColumnType("text");
 
-                    b.Property<Guid>("GrupoId")
+                    b.Property<Guid?>("GrupoPermissaoId")
                         .HasColumnType("uuid");
 
                     b.Property<string>("Nome")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("PermissoesCustomizadas")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -404,70 +524,45 @@ namespace LudusGestao.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("EmpresaId");
+
+                    b.HasIndex("GrupoPermissaoId");
+
                     b.ToTable("Usuarios");
                 });
 
-            modelBuilder.Entity("LudusGestao.Domain.Entities.Empresa", b =>
+            modelBuilder.Entity("LudusGestao.Domain.Entities.UsuarioPermissaoFilial", b =>
                 {
-                    b.OwnsOne("LudusGestao.Domain.ValueObjects.Email", "Email", b1 =>
-                        {
-                            b1.Property<Guid>("EmpresaId")
-                                .HasColumnType("uuid");
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
 
-                            b1.Property<string>("Endereco")
-                                .IsRequired()
-                                .HasColumnType("text");
+                    b.Property<DateTime?>("DataAtualizacao")
+                        .HasColumnType("timestamp with time zone");
 
-                            b1.HasKey("EmpresaId");
+                    b.Property<DateTime>("DataCriacao")
+                        .HasColumnType("timestamp with time zone");
 
-                            b1.ToTable("Empresas");
+                    b.Property<Guid>("FilialId")
+                        .HasColumnType("uuid");
 
-                            b1.WithOwner()
-                                .HasForeignKey("EmpresaId");
-                        });
+                    b.Property<string>("Permissoes")
+                        .IsRequired()
+                        .HasColumnType("text");
 
-                    b.OwnsOne("LudusGestao.Domain.ValueObjects.Endereco", "Endereco", b1 =>
-                        {
-                            b1.Property<Guid>("EmpresaId")
-                                .HasColumnType("uuid");
+                    b.Property<int>("TenantId")
+                        .HasColumnType("integer");
 
-                            b1.Property<string>("Bairro")
-                                .IsRequired()
-                                .HasColumnType("text");
+                    b.Property<Guid>("UsuarioId")
+                        .HasColumnType("uuid");
 
-                            b1.Property<string>("CEP")
-                                .IsRequired()
-                                .HasColumnType("text");
+                    b.HasKey("Id");
 
-                            b1.Property<string>("Cidade")
-                                .IsRequired()
-                                .HasColumnType("text");
+                    b.HasIndex("FilialId");
 
-                            b1.Property<string>("Estado")
-                                .IsRequired()
-                                .HasColumnType("text");
+                    b.HasIndex("UsuarioId");
 
-                            b1.Property<string>("Numero")
-                                .IsRequired()
-                                .HasColumnType("text");
-
-                            b1.Property<string>("Rua")
-                                .IsRequired()
-                                .HasColumnType("text");
-
-                            b1.HasKey("EmpresaId");
-
-                            b1.ToTable("Empresas");
-
-                            b1.WithOwner()
-                                .HasForeignKey("EmpresaId");
-                        });
-
-                    b.Navigation("Email")
-                        .IsRequired();
-
-                    b.Navigation("Endereco")
-                        .IsRequired();
+                    b.ToTable("UsuariosPermissoesFiliais");
                 });
 
             modelBuilder.Entity("LudusGestao.Domain.Entities.Filial", b =>
@@ -479,6 +574,25 @@ namespace LudusGestao.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("Empresa");
+                });
+
+            modelBuilder.Entity("LudusGestao.Domain.Entities.GrupoPermissaoFilial", b =>
+                {
+                    b.HasOne("LudusGestao.Domain.Entities.Filial", "Filial")
+                        .WithMany()
+                        .HasForeignKey("FilialId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("LudusGestao.Domain.Entities.GrupoPermissao", "GrupoPermissao")
+                        .WithMany()
+                        .HasForeignKey("GrupoPermissaoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Filial");
+
+                    b.Navigation("GrupoPermissao");
                 });
 
             modelBuilder.Entity("LudusGestao.Domain.Entities.Local", b =>
@@ -530,6 +644,42 @@ namespace LudusGestao.Infrastructure.Migrations
                     b.Navigation("Cliente");
 
                     b.Navigation("Local");
+
+                    b.Navigation("Usuario");
+                });
+
+            modelBuilder.Entity("LudusGestao.Domain.Entities.Usuario", b =>
+                {
+                    b.HasOne("LudusGestao.Domain.Entities.Empresa", "Empresa")
+                        .WithMany()
+                        .HasForeignKey("EmpresaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("LudusGestao.Domain.Entities.GrupoPermissao", "GrupoPermissao")
+                        .WithMany()
+                        .HasForeignKey("GrupoPermissaoId");
+
+                    b.Navigation("Empresa");
+
+                    b.Navigation("GrupoPermissao");
+                });
+
+            modelBuilder.Entity("LudusGestao.Domain.Entities.UsuarioPermissaoFilial", b =>
+                {
+                    b.HasOne("LudusGestao.Domain.Entities.Filial", "Filial")
+                        .WithMany()
+                        .HasForeignKey("FilialId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("LudusGestao.Domain.Entities.Usuario", "Usuario")
+                        .WithMany()
+                        .HasForeignKey("UsuarioId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Filial");
 
                     b.Navigation("Usuario");
                 });

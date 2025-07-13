@@ -90,6 +90,9 @@ builder.Services.AddValidatorsFromAssemblyContaining<MappingProfile>();
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddScoped<ITenantService, TenantService>();
 
+// SeedService
+builder.Services.AddScoped<ISeedService, LudusGestao.Infrastructure.Services.SeedService>();
+
 // HttpClient para APIs externas
 builder.Services.AddHttpClient();
 
@@ -174,7 +177,6 @@ if (args.Length > 0 && args[0].ToLower() == "seed")
     using var scope = app.Services.CreateScope();
     var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
     db.Database.Migrate();
-    db.Seed();
     Console.WriteLine("Seed executado com sucesso.");
     return;
 }

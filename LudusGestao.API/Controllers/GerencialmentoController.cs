@@ -51,8 +51,12 @@ public class GerencialmentoController : ControllerBase
             Id = Guid.NewGuid(),
             Nome = empresaDto.Nome,
             Cnpj = empresaDto.Cnpj,
-            Email = new LudusGestao.Domain.ValueObjects.Email(empresaDto.Email),
-            Endereco = new LudusGestao.Domain.ValueObjects.Endereco(empresaDto.Rua, empresaDto.Numero, empresaDto.Bairro, empresaDto.Cidade, empresaDto.Estado, empresaDto.CEP),
+            Email = empresaDto.Email,
+            Endereco = $"{empresaDto.Rua}, {empresaDto.Numero}",
+            Cidade = empresaDto.Cidade,
+            Estado = empresaDto.Estado,
+            Cep = empresaDto.CEP,
+            Telefone = "",
             Situacao = SituacaoBase.Ativo,
             TenantId = novoTenantId
         };
@@ -95,15 +99,13 @@ public class GerencialmentoController : ControllerBase
             Email = emailUsuario,
             Telefone = "",
             Cargo = "Administrador",
-            FilialId = filial.Id,
-            GrupoId = Guid.NewGuid(),
+            EmpresaId = empresa.Id,
+            GrupoPermissaoId = null, // ou um grupo padrão se desejar
             Situacao = SituacaoBase.Ativo,
             UltimoAcesso = DateTime.UtcNow,
             Foto = "",
-            PermissoesCustomizadas = new List<int>(),
             SenhaHash = senhaHash,
             TenantId = novoTenantId,
-
         };
         _db.Usuarios.Add(usuario);
         await _db.SaveChangesAsync();
@@ -114,13 +116,13 @@ public class GerencialmentoController : ControllerBase
             Id = empresa.Id,
             Nome = empresa.Nome,
             Cnpj = empresa.Cnpj,
-            Email = empresa.Email.Endereco,
-            Rua = empresa.Endereco.Rua,
-            Numero = empresa.Endereco.Numero,
-            Bairro = empresa.Endereco.Bairro,
-            Cidade = empresa.Endereco.Cidade,
-            Estado = empresa.Endereco.Estado,
-            CEP = empresa.Endereco.CEP,
+            Email = empresa.Email,
+            Rua = empresa.Endereco,
+            Numero = "",
+            Bairro = "",
+            Cidade = empresa.Cidade,
+            Estado = empresa.Estado,
+            CEP = empresa.Cep,
             Situacao = empresa.Situacao,
             TenantId = empresa.TenantId
         };
@@ -141,12 +143,11 @@ public class GerencialmentoController : ControllerBase
             Email = usuario.Email,
             Telefone = usuario.Telefone,
             Cargo = usuario.Cargo,
-            FilialId = usuario.FilialId,
-            GrupoId = usuario.GrupoId,
+            EmpresaId = usuario.EmpresaId,
+            GrupoPermissaoId = usuario.GrupoPermissaoId,
             Situacao = usuario.Situacao,
             UltimoAcesso = usuario.UltimoAcesso,
             Foto = usuario.Foto,
-            PermissoesCustomizadas = usuario.PermissoesCustomizadas
         };
 
         var resultado = new

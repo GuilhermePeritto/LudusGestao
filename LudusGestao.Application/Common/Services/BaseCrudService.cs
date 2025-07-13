@@ -21,23 +21,21 @@ namespace LudusGestao.Application.Common.Services
             _mapper = mapper;
         }
 
-        public virtual async Task<ApiPagedResponse<object>> ListarPaginado(QueryParamsBase queryParams)
+        public virtual async Task<ApiPagedResponse<TDto>> ListarPaginado(QueryParamsBase queryParams)
         {
             var (entities, totalCount) = await _repository.ListarPaginado(queryParams);
             var dtos = _mapper.Map<IEnumerable<TDto>>(entities);
-            object result;
+            
             if (!string.IsNullOrEmpty(queryParams.Fields))
             {
                 var fields = queryParams.Fields.Split(',');
-                result = dtos.Select(r =>
+                var filteredDtos = dtos.Select(r =>
                     fields.ToDictionary(f => f, f => r.GetType().GetProperty(f, System.Reflection.BindingFlags.IgnoreCase | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance)?.GetValue(r, null))
-                ).ToList();
+                ).Cast<TDto>().ToList();
+                return new ApiPagedResponse<TDto>(filteredDtos, queryParams.Page, queryParams.Limit, totalCount);
             }
-            else
-            {
-                result = dtos;
-            }
-            return new ApiPagedResponse<object>(result, queryParams.Page, queryParams.Limit, totalCount);
+            
+            return new ApiPagedResponse<TDto>(dtos, queryParams.Page, queryParams.Limit, totalCount);
         }
 
         public virtual async Task<IEnumerable<TDto>> Listar()
