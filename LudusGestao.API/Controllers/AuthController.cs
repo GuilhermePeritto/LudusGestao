@@ -6,7 +6,7 @@ using LudusGestao.Application.Services;
 namespace LudusGestao.API.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/autenticacao")]
 public class AuthController : ControllerBase
 {
     private readonly AuthService _authService;
