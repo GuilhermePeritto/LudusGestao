@@ -121,6 +121,10 @@ builder.Services.AddScoped<LudusGestao.Domain.Interfaces.Services.IAuthService, 
 builder.Services.AddScoped<LudusGestao.Application.Services.AuthService>();
 builder.Services.AddScoped<IEmpresaRepository, EmpresaRepository>();
 builder.Services.AddScoped<EmpresaService>();
+builder.Services.AddScoped<IGrupoPermissaoRepository, GrupoPermissaoRepository>();
+builder.Services.AddScoped<GrupoPermissaoService>();
+builder.Services.AddScoped<IPermissaoRepository, PermissaoRepository>();
+builder.Services.AddScoped<PermissaoService>();
 
 // JWT Authentication
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

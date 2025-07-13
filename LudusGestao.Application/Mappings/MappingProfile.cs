@@ -7,6 +7,8 @@ using LudusGestao.Application.DTOs.Recebivel;
 using LudusGestao.Application.DTOs.Usuario;
 using LudusGestao.Domain.Entities;
 using LudusGestao.Application.DTOs.Empresa;
+using LudusGestao.Application.DTOs.GrupoPermissao;
+using LudusGestao.Application.DTOs.Permissao;
 
 namespace LudusGestao.Application.Mappings
 {
@@ -71,6 +73,14 @@ namespace LudusGestao.Application.Mappings
                 .ForMember(dest => dest.Cidade, opt => opt.MapFrom(src => src.Cidade))
                 .ForMember(dest => dest.Estado, opt => opt.MapFrom(src => src.Estado))
                 .ForMember(dest => dest.CEP, opt => opt.MapFrom(src => src.Cep));
+
+            // GrupoPermissao
+            CreateMap<CreateGrupoPermissaoDTO, GrupoPermissao>();
+            CreateMap<UpdateGrupoPermissaoDTO, GrupoPermissao>();
+            CreateMap<GrupoPermissao, GrupoPermissaoDTO>();
+
+            // Permissao
+            CreateMap<Permissao, PermissaoDTO>();
         }
     }
 } 

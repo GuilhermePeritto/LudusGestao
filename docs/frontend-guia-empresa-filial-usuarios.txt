@@ -1,0 +1,532 @@
+================================================================================
+                    GUIA FRONTEND - ESQUEMA DE PERMISSÕES E MULTITENANCY
+================================================================================
+
+📋 SUMÁRIO
+---------
+1. Visão Geral do Sistema
+2. Entidades Principais
+3. Relacionamentos
+4. Endpoints da API
+5. Fluxo de Autenticação e Autorização
+6. Exemplos de Uso
+7. Considerações de Segurança
+
+================================================================================
+1. VISÃO GERAL DO SISTEMA
+================================================================================
+
+O sistema Ludus Gestão utiliza um modelo de MULTITENANCY baseado em:
+- EMPRESA (Tenant principal)
+- FILIAL (Subdivisões da empresa)
+- USUÁRIOS (Funcionários com permissões específicas)
+- GRUPOS DE PERMISSÃO (Conjuntos de permissões)
+- PERMISSÕES (Ações específicas por módulo)
+
+Cada usuário pertence a uma EMPRESA e pode ter permissões específicas por FILIAL.
+
+================================================================================
+2. ENTIDADES PRINCIPAIS
+================================================================================
+
+🏢 EMPRESA (Tenant Principal)
+-----------------------------
+- ID: Guid
+- Nome: string
+- CNPJ: string
+- Email: string
+- Endereço: string
+- Cidade: string
+- Estado: string
+- CEP: string
+- Telefone: string
+- Situação: Ativo/Inativo
+- TenantId: int
+
+🏢 FILIAL
+----------
+- ID: Guid
+- Nome: string
+- Código: string
+- Endereço: string
+- Cidade: string
+- Estado: string
+- CEP: string
+- Telefone: string
+- Email: string
+- CNPJ: string
+- Responsável: string
+- DataAbertura: DateTime
+- Situação: Ativo/Inativo
+- EmpresaId: Guid (FK para Empresa)
+- TenantId: int
+
+👤 USUÁRIO
+-----------
+- ID: Guid
+- Nome: string
+- Email: string
+- Telefone: string
+- Cargo: string
+- EmpresaId: Guid (FK para Empresa)
+- GrupoPermissaoId: Guid? (FK para GrupoPermissao)
+- Situação: Ativo/Inativo
+- ÚltimoAcesso: DateTime
+- Foto: string? (opcional)
+- SenhaHash: string
+- TenantId: int
+
+🔐 GRUPO DE PERMISSÃO
+---------------------
+- ID: Guid
+- Nome: string
+- Descrição: string
+- Situação: Ativo/Inativo
+- TenantId: int
+
+🔑 PERMISSÃO
+------------
+- ID: Guid
+- Nome: string (ex: "Sistema.Acesso")
+- Descrição: string
+- MóduloPai: string (ex: "Sistema")
+- Submódulo: string (ex: "")
+- Ação: string (ex: "Acessar")
+- Situação: Ativo/Inativo
+- TenantId: int
+
+🔗 GRUPO PERMISSÃO FILIAL
+-------------------------
+- ID: Guid
+- GrupoPermissaoId: Guid (FK para GrupoPermissao)
+- FilialId: Guid (FK para Filial)
+- Permissões: List<Guid> (IDs das permissões)
+- TenantId: int
+
+🔗 USUÁRIO PERMISSÃO FILIAL
+---------------------------
+- ID: Guid
+- UsuarioId: Guid (FK para Usuario)
+- FilialId: Guid (FK para Filial)
+- Permissões: List<Guid> (IDs das permissões)
+- TenantId: int
+
+================================================================================
+3. RELACIONAMENTOS
+================================================================================
+
+EMPRESA (1) ←→ (N) FILIAL
+- Uma empresa pode ter várias filiais
+- Cada filial pertence a uma empresa
+
+EMPRESA (1) ←→ (N) USUÁRIO
+- Uma empresa pode ter vários usuários
+- Cada usuário pertence a uma empresa
+
+GRUPO PERMISSÃO (1) ←→ (N) USUÁRIO
+- Um grupo de permissão pode ter vários usuários
+- Cada usuário pode pertencer a um grupo (opcional)
+
+GRUPO PERMISSÃO (1) ←→ (N) GRUPO PERMISSÃO FILIAL
+- Um grupo pode ter permissões específicas por filial
+
+USUÁRIO (1) ←→ (N) USUÁRIO PERMISSÃO FILIAL
+- Um usuário pode ter permissões específicas por filial
+
+PERMISSÃO (N) ←→ (N) GRUPO PERMISSÃO FILIAL
+- Muitas permissões podem estar em muitos grupos por filial
+
+PERMISSÃO (N) ←→ (N) USUÁRIO PERMISSÃO FILIAL
+- Muitas permissões podem estar em muitos usuários por filial
+
+================================================================================
+4. ENDPOINTS DA API
+================================================================================
+
+🔐 AUTENTICAÇÃO
+---------------
+POST /api/auth/login
+- Body: { "email": "string", "senha": "string" }
+- Retorna: Token JWT
+
+POST /api/auth/register
+- Body: { "nome": "string", "email": "string", "senha": "string", "empresaId": "guid" }
+- Retorna: Token JWT
+
+🏢 EMPRESAS
+-----------
+GET /api/empresas
+- Lista todas as empresas do tenant atual
+- Headers: Authorization: Bearer {token}
+
+GET /api/empresas/{id}
+- Obtém empresa específica
+- Headers: Authorization: Bearer {token}
+
+POST /api/empresas
+- Cria nova empresa
+- Body: CreateEmpresaDTO
+- Headers: Authorization: Bearer {token}
+
+PUT /api/empresas/{id}
+- Atualiza empresa
+- Body: UpdateEmpresaDTO
+- Headers: Authorization: Bearer {token}
+
+DELETE /api/empresas/{id}
+- Remove empresa
+- Headers: Authorization: Bearer {token}
+
+🏢 FILIAIS
+----------
+GET /api/filiais
+- Lista todas as filiais do tenant atual
+- Headers: Authorization: Bearer {token}
+
+GET /api/filiais/{id}
+- Obtém filial específica
+- Headers: Authorization: Bearer {token}
+
+POST /api/filiais
+- Cria nova filial
+- Body: CreateFilialDTO
+- Headers: Authorization: Bearer {token}
+
+PUT /api/filiais/{id}
+- Atualiza filial
+- Body: UpdateFilialDTO
+- Headers: Authorization: Bearer {token}
+
+DELETE /api/filiais/{id}
+- Remove filial
+- Headers: Authorization: Bearer {token}
+
+👤 USUÁRIOS
+-----------
+GET /api/usuarios
+- Lista todos os usuários do tenant atual
+- Headers: Authorization: Bearer {token}
+
+GET /api/usuarios/{id}
+- Obtém usuário específico
+- Headers: Authorization: Bearer {token}
+
+POST /api/usuarios
+- Cria novo usuário
+- Body: CreateUsuarioDTO
+- Headers: Authorization: Bearer {token}
+
+PUT /api/usuarios/{id}
+- Atualiza usuário
+- Body: UpdateUsuarioDTO
+- Headers: Authorization: Bearer {token}
+
+DELETE /api/usuarios/{id}
+- Remove usuário
+- Headers: Authorization: Bearer {token}
+
+🔐 GRUPOS DE PERMISSÃO
+----------------------
+GET /api/grupos-permissoes
+- Lista todos os grupos de permissão do tenant atual
+- Headers: Authorization: Bearer {token}
+
+GET /api/grupos-permissoes/{id}
+- Obtém grupo específico
+- Headers: Authorization: Bearer {token}
+
+POST /api/grupos-permissoes
+- Cria novo grupo
+- Body: CreateGrupoPermissaoDTO
+- Headers: Authorization: Bearer {token}
+
+PUT /api/grupos-permissoes/{id}
+- Atualiza grupo
+- Body: UpdateGrupoPermissaoDTO
+- Headers: Authorization: Bearer {token}
+
+DELETE /api/grupos-permissoes/{id}
+- Remove grupo
+- Headers: Authorization: Bearer {token}
+
+🔑 PERMISSÕES
+-------------
+GET /api/permissoes
+- Lista todas as permissões do tenant atual
+- Headers: Authorization: Bearer {token}
+
+GET /api/permissoes/{id}
+- Obtém permissão específica
+- Headers: Authorization: Bearer {token}
+
+🔗 GRUPO PERMISSÃO FILIAL
+-------------------------
+GET /api/grupos-permissoes-filiais
+- Lista grupos de permissão por filial
+- Headers: Authorization: Bearer {token}
+
+POST /api/grupos-permissoes-filiais
+- Associa permissões a grupo por filial
+- Body: { "grupoPermissaoId": "guid", "filialId": "guid", "permissoes": ["guid1", "guid2"] }
+- Headers: Authorization: Bearer {token}
+
+🔗 USUÁRIO PERMISSÃO FILIAL
+---------------------------
+GET /api/usuarios-permissoes-filiais
+- Lista permissões de usuário por filial
+- Headers: Authorization: Bearer {token}
+
+POST /api/usuarios-permissoes-filiais
+- Associa permissões a usuário por filial
+- Body: { "usuarioId": "guid", "filialId": "guid", "permissoes": ["guid1", "guid2"] }
+- Headers: Authorization: Bearer {token}
+
+================================================================================
+5. FLUXO DE AUTENTICAÇÃO E AUTORIZAÇÃO
+================================================================================
+
+1. LOGIN
+   - Usuário faz login com email/senha
+   - Sistema retorna JWT token com claims do usuário
+
+2. VERIFICAÇÃO DE PERMISSÕES
+   - Frontend inclui token no header Authorization
+   - Backend valida token e extrai informações do usuário
+   - Sistema verifica permissões do usuário para a ação solicitada
+
+3. FILTROS DE TENANT
+   - Todas as consultas são automaticamente filtradas por TenantId
+   - Usuário só vê dados da sua empresa
+
+4. VERIFICAÇÃO POR FILIAL
+   - Para ações específicas de filial, sistema verifica se usuário tem permissão
+   - Permissões podem ser por grupo ou individuais
+
+================================================================================
+6. EXEMPLOS DE USO
+================================================================================
+
+📝 EXEMPLO 1: Login e Obter Dados do Usuário
+--------------------------------------------
+```javascript
+// Login
+const response = await fetch('/api/auth/login', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    email: 'admin@empresa.com',
+    senha: 'senha123'
+  })
+});
+
+const { token } = await response.json();
+
+// Salvar token
+localStorage.setItem('token', token);
+
+// Obter dados do usuário
+const userResponse = await fetch('/api/usuarios/me', {
+  headers: { 'Authorization': `Bearer ${token}` }
+});
+```
+
+📝 EXEMPLO 2: Listar Filiais da Empresa
+---------------------------------------
+```javascript
+const filiaisResponse = await fetch('/api/filiais', {
+  headers: { 'Authorization': `Bearer ${token}` }
+});
+
+const filiais = await filiaisResponse.json();
+// Retorna apenas filiais da empresa do usuário logado
+```
+
+📝 EXEMPLO 3: Verificar Permissão
+---------------------------------
+```javascript
+// Verificar se usuário pode criar reservas na filial X
+const hasPermission = await checkPermission('Reserva.Criar', filialId);
+
+async function checkPermission(permissionName, filialId) {
+  const response = await fetch(`/api/permissoes/check?permission=${permissionName}&filialId=${filialId}`, {
+    headers: { 'Authorization': `Bearer ${token}` }
+  });
+  return response.ok;
+}
+```
+
+📝 EXEMPLO 4: Criar Usuário com Grupo de Permissão
+--------------------------------------------------
+```javascript
+const newUser = {
+  nome: 'João Silva',
+  email: 'joao@empresa.com',
+  senha: 'senha123',
+  telefone: '(11) 99999-9999',
+  cargo: 'Gerente',
+  empresaId: empresaId,
+  grupoPermissaoId: grupoAdminId
+};
+
+const response = await fetch('/api/usuarios', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${token}`
+  },
+  body: JSON.stringify(newUser)
+});
+```
+
+================================================================================
+7. CONSIDERAÇÕES DE SEGURANÇA
+================================================================================
+
+🔒 MULTITENANCY
+---------------
+- Cada empresa tem seu próprio TenantId
+- Dados são automaticamente isolados por tenant
+- Usuário só acessa dados da sua empresa
+
+🔒 AUTORIZAÇÃO
+--------------
+- Todas as rotas (exceto login/register) requerem token JWT
+- Permissões são verificadas por ação e filial
+- Sistema suporta permissões granulares
+
+🔒 VALIDAÇÃO
+------------
+- Todos os DTOs têm validação no backend
+- Dados são sanitizados antes de salvar
+- Validação de tenant em todas as operações
+
+🔒 AUDITORIA
+------------
+- Todas as entidades têm DataCriacao e DataAtualizacao
+- Sistema registra alterações importantes
+- Logs de acesso e operações críticas
+
+================================================================================
+8. ESTRUTURA DE PERMISSÕES SUGERIDA
+================================================================================
+
+📋 MÓDULOS PRINCIPAIS
+---------------------
+- Sistema (configurações gerais)
+- Empresas (gestão de empresas)
+- Filiais (gestão de filiais)
+- Usuários (gestão de usuários)
+- Clientes (gestão de clientes)
+- Locais (gestão de locais)
+- Reservas (gestão de reservas)
+- Recebíveis (gestão financeira)
+- Relatórios (visualização de relatórios)
+
+📋 AÇÕES BÁSICAS
+----------------
+- Acessar (visualizar)
+- Criar (adicionar novo)
+- Editar (modificar existente)
+- Excluir (remover)
+- Exportar (baixar dados)
+- Aprovar (aprovar/rejeitar)
+
+📋 EXEMPLO DE PERMISSÕES
+------------------------
+- Sistema.Acesso
+- Empresa.Visualizar
+- Empresa.Criar
+- Empresa.Editar
+- Empresa.Excluir
+- Filial.Visualizar
+- Filial.Criar
+- Filial.Editar
+- Filial.Excluir
+- Usuario.Visualizar
+- Usuario.Criar
+- Usuario.Editar
+- Usuario.Excluir
+- Cliente.Visualizar
+- Cliente.Criar
+- Cliente.Editar
+- Cliente.Excluir
+- Local.Visualizar
+- Local.Criar
+- Local.Editar
+- Local.Excluir
+- Reserva.Visualizar
+- Reserva.Criar
+- Reserva.Editar
+- Reserva.Excluir
+- Reserva.Aprovar
+- Recebivel.Visualizar
+- Recebivel.Criar
+- Recebivel.Editar
+- Recebivel.Excluir
+- Relatorio.Visualizar
+- Relatorio.Exportar
+
+================================================================================
+9. CONFIGURAÇÃO INICIAL
+================================================================================
+
+🔄 SEED DE DADOS
+----------------
+O sistema já vem com dados iniciais configurados:
+
+1. Empresa: "Ludus Gestão"
+2. Filial: "Filial Matriz"
+3. Cliente: "Cliente Exemplo"
+4. Local: "Sala de Reunião"
+5. Permissão: "Sistema.Acesso"
+6. Grupo de Permissão: "Administrador"
+7. Usuário: "Administrador" (admin@ludusgestao.com.br / admin123)
+8. Reserva: Reserva de teste
+9. Recebível: Recebível de teste
+
+🔧 CONFIGURAÇÃO DE GRUPOS
+-------------------------
+1. Administrador: Acesso total ao sistema
+2. Gerente: Acesso a gestão de operações
+3. Operador: Acesso básico para operações
+4. Visualizador: Apenas visualização
+
+================================================================================
+10. BOAS PRÁTICAS PARA O FRONTEND
+================================================================================
+
+✅ GESTÃO DE ESTADO
+-------------------
+- Armazenar token JWT no localStorage
+- Manter dados do usuário logado em estado global
+- Cachear permissões do usuário
+
+✅ INTERFACE
+------------
+- Mostrar/ocultar elementos baseado em permissões
+- Desabilitar botões para ações não permitidas
+- Feedback visual para ações restritas
+
+✅ NAVEGAÇÃO
+------------
+- Filtrar menu baseado em permissões
+- Redirecionar usuários sem permissão
+- Breadcrumbs para navegação
+
+✅ VALIDAÇÃO
+------------
+- Validação client-side para melhor UX
+- Validação server-side obrigatória
+- Mensagens de erro claras
+
+✅ SEGURANÇA
+------------
+- Nunca confiar apenas na validação client-side
+- Sempre enviar token em requisições
+- Logout automático em token expirado
+
+================================================================================
+FIM DO GUIA
+================================================================================
+
+Para dúvidas ou suporte, consulte a documentação da API ou entre em contato com a equipe de desenvolvimento. 
