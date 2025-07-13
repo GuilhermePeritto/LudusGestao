@@ -15,7 +15,7 @@ namespace LudusGestao.Domain.Entities
         public Guid GrupoId { get; set; }
         public SituacaoBase Situacao { get; set; }
         public DateTime UltimoAcesso { get; set; }
-        public string Foto { get; set; }
+        public string? Foto { get; set; }
         public List<int> PermissoesCustomizadas { get; set; }
         public string SenhaHash { get; set; }
         public int TenantId { get; set; }

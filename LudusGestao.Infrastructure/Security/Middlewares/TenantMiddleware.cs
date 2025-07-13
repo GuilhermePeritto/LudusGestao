@@ -3,6 +3,7 @@ using LudusGestao.Domain.Interfaces.Services;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Security.Claims;
+using System.Text.Json;
 
 namespace LudusGestao.Infrastructure.Security.Middlewares
 {
@@ -26,17 +27,49 @@ namespace LudusGestao.Infrastructure.Security.Middlewares
                 return;
             }
 
-            // Ignorar rotas públicas de autenticação (ajustado para /api/auth/)
-            if (path.StartsWith("/api/autenticacao/"))
+            // Ignorar rotas públicas de autenticação
+            if (path.StartsWith("/api/autenticacao/") ||
+                path.StartsWith("/api/auth/"))
             {
                 await _next(context);
+                return;
+            }
+
+            // Verificar se o usuário está autenticado
+            if (!context.User.Identity?.IsAuthenticated ?? true)
+            {
+                context.Response.StatusCode = 401;
+                context.Response.ContentType = "application/json";
+                
+                var errorResponse = new
+                {
+                    success = false,
+                    message = "Token de autenticação não fornecido ou inválido.",
+                    statusCode = 401
+                };
+                
+                await context.Response.WriteAsync(JsonSerializer.Serialize(errorResponse));
                 return;
             }
 
             // Extrai o TenantId do claim do token JWT
             var tenantIdStr = context.User?.Claims?.FirstOrDefault(c => c.Type == "TenantId")?.Value;
             if (string.IsNullOrEmpty(tenantIdStr) || !int.TryParse(tenantIdStr, out var tenantId))
-                throw new System.UnauthorizedAccessException("TenantId não informado ou inválido no token.");
+            {
+                context.Response.StatusCode = 401;
+                context.Response.ContentType = "application/json";
+                
+                var errorResponse = new
+                {
+                    success = false,
+                    message = "TenantId não informado ou inválido no token.",
+                    statusCode = 401
+                };
+                
+                await context.Response.WriteAsync(JsonSerializer.Serialize(errorResponse));
+                return;
+            }
+
             tenantService.SetTenant(tenantId.ToString());
             await _next(context);
         }

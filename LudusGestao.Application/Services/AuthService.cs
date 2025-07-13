@@ -2,8 +2,10 @@ using LudusGestao.Application.DTOs.Auth;
 using LudusGestao.Application.Common.Models;
 using LudusGestao.Domain.Interfaces.Services;
 using LudusGestao.Domain.Interfaces.Repositories;
+using LudusGestao.Application.DTOs.Usuario;
 using System;
 using System.Threading.Tasks;
+using AutoMapper;
 
 namespace LudusGestao.Application.Services
 {
@@ -11,11 +13,13 @@ namespace LudusGestao.Application.Services
     {
         private readonly IAuthService _authService;
         private readonly IUsuarioRepository _usuarioRepository;
+        private readonly IMapper _mapper;
 
-        public AuthService(IAuthService authService, IUsuarioRepository usuarioRepository)
+        public AuthService(IAuthService authService, IUsuarioRepository usuarioRepository, IMapper mapper)
         {
             _authService = authService;
             _usuarioRepository = usuarioRepository;
+            _mapper = mapper;
         }
 
         public async Task<ApiResponse<TokenDTO>> LoginAsync(LoginDTO dto)
@@ -31,11 +35,15 @@ namespace LudusGestao.Application.Services
             var accessToken = await _authService.GerarTokenAsync(usuario);
             var refreshToken = await _authService.GerarRefreshTokenAsync(usuario);
 
+            // Mapear usuário para DTO
+            var usuarioDto = _mapper.Map<UsuarioDTO>(usuario);
+
             var tokenDto = new TokenDTO
             {
                 AccessToken = accessToken,
                 RefreshToken = refreshToken,
-                ExpiraEm = DateTime.UtcNow.AddHours(2)
+                ExpiraEm = DateTime.UtcNow.AddHours(2),
+                Usuario = usuarioDto
             };
 
             return new ApiResponse<TokenDTO>(tokenDto, "Login realizado com sucesso");
@@ -73,11 +81,15 @@ namespace LudusGestao.Application.Services
             var novoAccessToken = await _authService.GerarTokenAsync(usuario);
             var novoRefreshToken = await _authService.GerarRefreshTokenAsync(usuario);
 
+            // Mapear usuário para DTO
+            var usuarioDto = _mapper.Map<UsuarioDTO>(usuario);
+
             var tokenDto = new TokenDTO
             {
                 AccessToken = novoAccessToken,
                 RefreshToken = novoRefreshToken,
-                ExpiraEm = DateTime.UtcNow.AddHours(2)
+                ExpiraEm = DateTime.UtcNow.AddHours(2),
+                Usuario = usuarioDto
             };
 
             Console.WriteLine("[AuthAppService] Token renovado com sucesso");

@@ -203,6 +203,7 @@ namespace LudusGestao.Infrastructure.Data.Repositories.Base
                     { "documento", "Documento" },
                     { "data", "Data" },
                     { "dataCriacao", "DataCriacao" },
+                    { "dataVencimento", "DataVencimento" },
                     { "valor", "Valor" },
                     { "situacao", "Situacao" }
                 };
