@@ -27,7 +27,7 @@ namespace LudusGestao.Infrastructure.Security.Middlewares
             }
 
             // Ignorar rotas públicas de autenticação (ajustado para /api/auth/)
-            if (path.StartsWith("/api/auth/"))
+            if (path.StartsWith("/api/autenticacao/"))
             {
                 await _next(context);
                 return;
