@@ -1,6 +1,22 @@
 version: '3.8'
 
 services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15
+    container_name: ludus_gestao_postgres
+    environment:
+      POSTGRES_DB: ludusdb_dev
+      POSTGRES_USER: ludus
+      POSTGRES_PASSWORD: ludus123
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - ludus-network
+    restart: unless-stopped
+
   # API Application
   api:
     build:
@@ -12,10 +28,19 @@ services:
       - "5001:443"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      # A connection string será lida do appsettings.json
+      - ConnectionStrings__DefaultConnection=Host=postgres;Database=ludusdb_dev;Username=ludus;Password=ludus123
+    volumes:
+      - ../:/src
+      - /src/bin
+      - /src/obj
+    depends_on:
+      - postgres
     networks:
       - ludus-network
     restart: unless-stopped
+
+volumes:
+  postgres_data:
 
 networks:
   ludus-network:
