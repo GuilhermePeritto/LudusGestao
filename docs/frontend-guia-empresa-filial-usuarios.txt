@@ -73,7 +73,7 @@ Cada usuário pertence a uma EMPRESA e pode ter permissões específicas por FIL
 - Situação: Ativo/Inativo
 - ÚltimoAcesso: DateTime
 - Foto: string? (opcional)
-- SenhaHash: string
+- Senha: string
 - TenantId: int
 
 🔐 GRUPO DE PERMISSÃO

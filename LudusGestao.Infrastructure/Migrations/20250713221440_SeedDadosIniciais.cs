@@ -139,7 +139,7 @@ namespace LudusGestao.Infrastructure.Migrations
                     Situacao = table.Column<int>(type: "integer", nullable: false),
                     UltimoAcesso = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     Foto = table.Column<string>(type: "text", nullable: true),
-                    SenhaHash = table.Column<string>(type: "text", nullable: false),
+                    Senha = table.Column<string>(type: "text", nullable: false),
                     TenantId = table.Column<int>(type: "integer", nullable: false),
                     DataCriacao = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     DataAtualizacao = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)

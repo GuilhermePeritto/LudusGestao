@@ -47,9 +47,9 @@ namespace LudusGestao.Application.Mappings
 
             // Usuario
             CreateMap<CreateUsuarioDTO, Usuario>()
-                .ForMember(dest => dest.SenhaHash, opt => opt.MapFrom(src => src.Senha));
+                .ForMember(dest => dest.Senha, opt => opt.MapFrom(src => src.Senha));
             CreateMap<UpdateUsuarioDTO, Usuario>()
-                .ForMember(dest => dest.SenhaHash, opt => opt.MapFrom(src => src.Senha));
+                .ForMember(dest => dest.Senha, opt => opt.MapFrom(src => src.Senha));
             CreateMap<Usuario, UsuarioDTO>();
 
             // Empresa

@@ -6,6 +6,7 @@ using LudusGestao.Infrastructure.Data.Context;
 using LudusGestao.Infrastructure.Data.Repositories.Base;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace LudusGestao.Infrastructure.Data.Repositories;
@@ -13,4 +14,9 @@ namespace LudusGestao.Infrastructure.Data.Repositories;
 public class EmpresaRepository : BaseRepository<Empresa>, IEmpresaRepository
 {
     public EmpresaRepository(ApplicationDbContext context, ITenantService tenantService) : base(context, tenantService) { }
+
+    public async Task<int> GetMaxTenantIdAsync()
+    {
+        return await _context.Empresas.MaxAsync(e => (int?)e.TenantId) ?? 0;
+    }
 } 

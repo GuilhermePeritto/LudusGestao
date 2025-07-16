@@ -39,4 +39,11 @@ public class UsuarioRepository : BaseRepository<Usuario>, IUsuarioRepository
         query = ApplyTenantFilter(query);
         return await query.Where(u => u.GrupoPermissaoId == grupoId).ToListAsync();
     }
+
+    public async Task<Usuario?> GetByEmailAsync(string email)
+    {
+        return await _context.Set<Usuario>()
+            .IgnoreQueryFilters()
+            .FirstOrDefaultAsync(u => u.Email == email);
+    }
 } 

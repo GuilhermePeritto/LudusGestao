@@ -81,7 +81,7 @@ namespace LudusGestao.Infrastructure.Security
 
         public async Task<bool> ValidarSenhaAsync(Usuario usuario, string senha)
         {
-            return BCrypt.Net.BCrypt.Verify(senha, usuario.SenhaHash);
+            return BCrypt.Net.BCrypt.Verify(senha, usuario.Senha);
         }
 
         public string GerarHashSenha(string senha)

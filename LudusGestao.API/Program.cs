@@ -4,6 +4,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.EntityFrameworkCore;
 using LudusGestao.Infrastructure.Data.Context;
 using LudusGestao.Application.Services;
+using LudusGestao.Application.Common.Interfaces;
 using LudusGestao.Infrastructure.Data.Repositories;
 using LudusGestao.Infrastructure.Data.Repositories.Base;
 using LudusGestao.Domain.Interfaces.Repositories;
@@ -91,7 +92,7 @@ builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddScoped<ITenantService, TenantService>();
 
 // SeedService
-builder.Services.AddScoped<ISeedService, LudusGestao.Infrastructure.Services.SeedService>();
+// builder.Services.AddScoped<ISeedService, LudusGestao.Infrastructure.Services.SeedService>();
 
 // HttpClient para APIs externas
 builder.Services.AddHttpClient();
@@ -125,6 +126,7 @@ builder.Services.AddScoped<IGrupoPermissaoRepository, GrupoPermissaoRepository>(
 builder.Services.AddScoped<GrupoPermissaoService>();
 builder.Services.AddScoped<IPermissaoRepository, PermissaoRepository>();
 builder.Services.AddScoped<PermissaoService>();
+builder.Services.AddScoped<IGerencialmentoService, GerencialmentoService>();
 
 // JWT Authentication
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

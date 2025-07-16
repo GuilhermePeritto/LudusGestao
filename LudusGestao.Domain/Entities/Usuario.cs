@@ -18,7 +18,7 @@ namespace LudusGestao.Domain.Entities
         public SituacaoBase Situacao { get; set; }
         public DateTime UltimoAcesso { get; set; }
         public string? Foto { get; set; }
-        public string SenhaHash { get; set; }
+        public string Senha { get; set; }
         public int TenantId { get; set; }
     }
 } 
